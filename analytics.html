@@ -95,8 +95,13 @@
     <div class="container">
       <h2><i class="fa-solid fa-chart-pie"></i> Spending & Income Analytics</h2>
       <div class="charts">
-        <div class="chart-card">
-          <canvas id="monthlyChart"></canvas>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div class="chart-card">
+            <canvas id="monthlyChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <canvas id="balanceChart"></canvas>
+          </div>
         </div>
         <div class="chart-card">
           <canvas id="categoryChart"></canvas>
@@ -108,6 +113,43 @@
     </div>
 
   <script>
+    // Balance chart data
+    const balanceCtx = document.getElementById('balanceChart').getContext('2d');
+    const balanceLabels = [
+      {% for row in monthly_data %}
+        "{{ row.month }}/{{ row.year }}"{% if not loop.last %}, {% endif %}
+      {% endfor %}
+    ];
+    const balanceValues = [
+      {% for row in monthly_data %}
+        {{ row.balance or 0 }}{% if not loop.last %}, {% endif %}
+      {% endfor %}
+    ];
+    const balanceData = {
+      labels: balanceLabels,
+      datasets: [{
+        label: 'Cumulative Balance',
+        data: balanceValues,
+        borderColor: 'rgba(76, 201, 240, 1)',
+        backgroundColor: 'rgba(76, 201, 240, 0.2)',
+        fill: true,
+        tension: 0.3
+      }]
+    };
+
+    new Chart(balanceCtx, {
+      type: 'line',
+      data: balanceData,
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Cumulative Balance Over Time'
+          }
+        }
+      }
+    });
     const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
     const categoryCtx = document.getElementById('categoryChart').getContext('2d');
 
