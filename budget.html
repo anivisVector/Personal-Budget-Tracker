@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Budget Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: linear-gradient(120deg, #232526, #2980b9);
+            color: #f5f6fa;
+            transition: background 0.3s;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            background: rgba(44, 62, 80, 0.98);
+            padding: 36px 28px;
+            border-radius: 18px;
+            box-shadow: 0 10px 32px rgba(0,0,0,0.25);
+        }
+        .nav {
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(44, 62, 80, 0.98);
+            padding: 18px 0;
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        }
+        .nav a {
+            text-decoration: none;
+            margin: 0 10px;
+            color: #f5f6fa;
+            font-weight: 500;
+            font-size: 1.08em;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav a:hover {
+            background: #2980b9;
+            color: #fff200;
+        }
+        h2 {
+            text-align: center;
+            color: #fff200;
+            font-size: 2em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .form-card {
+            background: linear-gradient(135deg, #2980b9 60%, #232526 100%);
+            border-radius: 16px;
+            padding: 32px 24px;
+            margin-bottom: 36px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+            color: #fff;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .form-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+        }
+        form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 0;
+        }
+        label {
+            font-weight: bold;
+            color: #fff200;
+        }
+        input, select, button {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            background: #f5f6fa;
+            color: #232526;
+            margin-bottom: 0;
+        }
+        button {
+            background: linear-gradient(90deg, #2980b9 60%, #232526 100%);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s, transform 0.2s;
+            border-radius: 10px;
+            font-size: 1.08em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            grid-column: span 2;
+        }
+        button:hover {
+            background: #fff200;
+            color: #2980b9;
+            transform: scale(1.05);
+        }
+        .table-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-top: 24px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 14px 10px;
+            border-bottom: 1px solid #222;
+            text-align: center;
+            font-size: 1em;
+        }
+        th {
+            background: #2980b9;
+            color: #fff200;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        tr:hover td {
+            background: #232526;
+            color: #fff200;
+            transition: background 0.2s, color 0.2s;
+        }
+        @media (max-width: 900px) {
+            .container {
+                padding: 12px;
+            }
+            .form-card {
+                padding: 18px 8px;
+            }
+            .table-card {
+                padding: 10px;
+            }
+        }
+        @media (max-width: 600px) {
+            .nav {
+                flex-direction: column;
+                gap: 8px;
+                padding: 10px 0;
+            }
+            form {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Dashboard</a> |
+            <a href="{{ url_for('transactions') }}"><i class="fa-solid fa-money-bill-wave"></i> Transactions</a> |
+            <a href="{{ url_for('categories') }}"><i class="fa-solid fa-list"></i> Categories</a> |
+            <a href="{{ url_for('budget') }}"><i class="fa-solid fa-wallet"></i> Budgets</a> |
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-user"></i> Profile</a> |
+            <a href="{{ url_for('analytics') }}"><i class="fa-solid fa-chart-pie"></i> Analytics</a> |
+            <a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+
+        <div class="form-card">
+            <h2><i class="fa-solid fa-wallet"></i> Set Monthly Budget</h2>
+            <form method="POST">
+                <div>
+                    <label>Category</label>
+                    <select name="category_id" required>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label>Amount</label>
+                    <input type="number" name="amount" step="0.01" required>
+                </div>
+                <div>
+                    <label>Month</label>
+                    <input type="number" name="month" min="1" max="12" required>
+                </div>
+                <div>
+                    <label>Year</label>
+                    <input type="number" name="year" required>
+                </div>
+                <button type="submit"><i class="fa-solid fa-check"></i> Save Budget</button>
+            </form>
+        </div>
+        <div class="table-card">
+            <h2 style="margin-top: 20px;"><i class="fa-solid fa-calendar-days"></i> Your Budgets</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Month</th>
+                        <th>Year</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in budgets %}
+                    <tr>
+                        <td>{{ b.name }}</td>
+                        <td>{{ b.amount }}</td>
+                        <td>{{ b.month }}</td>
+                        <td>{{ b.year }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No budget entries found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

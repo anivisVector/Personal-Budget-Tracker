@@ -1,0 +1,42 @@
+<nav class="navbar">
+  <ul>
+    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+    <li><a href="{{ url_for('transactions') }}">Transactions</a></li>
+    <li><a href="{{ url_for('categories') }}">Categories</a></li>
+    <li><a href="{{ url_for('budget') }}">Budgets</a></li>
+    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+  </ul>
+</nav>
+
+<style>
+  .navbar {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    padding: 12px 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  }
+  .navbar ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 25px;
+  }
+  .navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 18px;
+    border-radius: 10px;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  .navbar a:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+  }
+</style>
