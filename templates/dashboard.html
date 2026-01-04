@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      transition: background 0.3s;
+    }
+    body.dark-mode {
+      background: linear-gradient(120deg, #4e54c8, #8f94fb);
+      color: #f5f6fa;
+    }
+    body.dark-mode table,
+    body.dark-mode th,
+    body.dark-mode td {
+      color: #232526 !important;
+    }
+    body.light-mode {
+      background: linear-gradient(120deg, #e0eafc, #a1c4fd);
+      color: #232526;
+    }
+    .theme-toggle {
+      cursor: pointer;
+      font-size: 1.3em;
+      margin-left: 20px;
+      color: #0083b0;
+      transition: color 0.3s;
+    }
+    .navbar {
+      background: rgba(34, 49, 63, 0.95);
+      padding: 18px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      border-bottom: 1px solid #222;
+    }
+    .navbar h1 {
+      color: #00b4db;
+      font-size: 2.1em;
+      letter-spacing: 2px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: #f5f6fa;
+      font-weight: 500;
+      font-size: 1.08em;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-links a:hover {
+      background: #00b4db;
+      color: #232526;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 32px;
+  background: linear-gradient(120deg, #e0eafc 60%, #a1c4fd 100%);
+      border-radius: 22px;
+      box-shadow: 0 10px 32px rgba(0,180,219,0.15);
+      border: 2px solid #00b4db;
+    }
+    .overview {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  margin-bottom: 36px;
+  gap: 18px;
+    }
+    .card {
+  background: linear-gradient(135deg, #4e54c8 60%, #8f94fb 100%);
+      border-radius: 18px;
+      padding: 36px 24px;
+      margin: 0;
+      width: 30%;
+      min-width: 220px;
+      text-align: center;
+      box-shadow: 0 6px 24px rgba(0,180,219,0.18);
+      color: #232526;
+      position: relative;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 2px solid #00b4db;
+    }
+    .card:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+    }
+    .card h3 {
+      margin: 0 0 12px 0;
+      font-size: 1.35em;
+      font-weight: 700;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+  color: #4e54c8;
+  text-shadow: 1px 1px 8px #8f94fb44;
+    }
+    .card p {
+      font-size: 2.1em;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: 1px;
+  color: #232526;
+  text-shadow: 1px 1px 8px #8f94fb44;
+    }
+    .transactions {
+      margin-top: 24px;
+  background: linear-gradient(90deg, #e0eafc 60%, #8f94fb22 100%);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 2px 12px rgba(0,180,219,0.10);
+      border: 1.5px solid #00b4db;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px #00b4db22;
+    }
+    th, td {
+      padding: 14px 10px;
+      border-bottom: 1px solid #222;
+      text-align: left;
+      font-size: 1em;
+    }
+    th {
+  background: linear-gradient(90deg, #4e54c8 60%, #8f94fb 100%);
+      color: #232526;
+      font-weight: 700;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #00b4db;
+    }
+    tr:hover td {
+      background: #00b4db22;
+      color: #0083b0;
+      transition: background 0.2s, color 0.2s;
+    }
+    .actions {
+      margin-top: 36px;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .actions a {
+      text-decoration: none;
+  background: linear-gradient(90deg, #4e54c8 60%, #8f94fb 100%);
+  color: #fff;
+      padding: 16px 0;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.15em;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      letter-spacing: 1px;
+    }
+    .actions a:hover {
+  background: #232526;
+  color: #8f94fb;
+  transform: scale(1.07);
+  box-shadow: 0 4px 18px #4e54c844;
+    }
+    @media (max-width: 900px) {
+      .overview {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 18px;
+      }
+      .card {
+        width: 100%;
+        min-width: 180px;
+      }
+      .actions {
+        flex-direction: column;
+        gap: 14px;
+      }
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 12px;
+      }
+      .navbar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px 8px;
+      }
+      .nav-links {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    }
+  </style>
+  <script>
+    // Theme toggle using CSS classes
+    function toggleTheme() {
+      const body = document.body;
+      if (body.classList.contains('dark-mode')) {
+        body.classList.remove('dark-mode');
+        body.classList.add('light-mode');
+        localStorage.setItem('theme', 'light');
+      } else {
+        body.classList.remove('light-mode');
+        body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+    // On page load, set theme from localStorage
+    window.onload = function() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      document.body.classList.add(theme + '-mode');
+    }
+  </script>
+
+  </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div style="max-width: 700px; margin: 20px auto 0 auto;">
+          {% for category, msg in messages %}
+            <div style="padding: 16px; margin-bottom: 12px; border-radius: 10px; font-weight: 600; font-size: 1.1em;
+              {% if category == 'success' %}background: #e0f7fa; color: #009688; border: 2px solid #009688;{% elif category == 'danger' %}background: #ffebee; color: #d32f2f; border: 2px solid #d32f2f;{% endif %}">
+              {{ msg }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    <div style="text-align: center; margin-top: 20px;">
+      <h2 style="color: #00b4db; text-shadow: 2px 2px 5px rgba(0,0,0,0.3); font-size: 32px; font-weight: 700;">
+        <i class="fa-solid fa-user"></i> Welcome, {{ session.username }}!
+      </h2>
+    </div>
+
+    {% if notifications %}
+    <div style="max-width: 700px; margin: 20px auto 0 auto;">
+      {% for note in notifications %}
+        <div style="padding: 16px; margin-bottom: 12px; border-radius: 10px; font-weight: 600; font-size: 1.1em;
+          {% if note.type == 'warning' %}background: #fffbe6; color: #e17055; border: 2px solid #fdcb6e;{% elif note.type == 'danger' %}background: #ffe6e6; color: #d63031; border: 2px solid #d63031;{% else %}background: #e0eafc; color: #0984e3; border: 2px solid #0984e3;{% endif %}">
+          <i class="fa-solid fa-triangle-exclamation"></i> {{ note.message }}
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  <div class="navbar">
+    <h1><i class="fa-solid fa-coins"></i> My Budget Tracker</h1>
+    <div class="nav-links">
+      <a href="/dashboard"><i class="fa-solid fa-house"></i> Dashboard</a>
+      <a href="/transactions"><i class="fa-solid fa-money-bill-wave"></i> Transactions</a>
+      <a href="/categories"><i class="fa-solid fa-list"></i> Categories</a>
+      <a href="/budget"><i class="fa-solid fa-wallet"></i> Budgets</a>
+      <a href="/profile"><i class="fa-solid fa-user"></i> Profile</a>
+      <a href="/analytics"><i class="fa-solid fa-chart-pie"></i> Analytics</a>
+      <span class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme"><i class="fa-solid fa-circle-half-stroke"></i></span>
+      <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="overview">
+      <div class="card" style="background: linear-gradient(135deg, #00b4db 60%, #43e97b 100%);">
+        <h3><i class="fa-solid fa-arrow-trend-up"></i> Total Income</h3>
+        <p>₹{{ total_income }}</p>
+      </div>
+      <div class="card" style="background: linear-gradient(135deg, #fff200 60%, #00b4db 100%);">
+        <h3><i class="fa-solid fa-wallet"></i> Balance</h3>
+        <p>₹{{ balance }}</p>
+      </div>
+      <div class="card" style="background: linear-gradient(135deg, #43e97b 60%, #00b4db 100%);">
+        <h3><i class="fa-solid fa-arrow-trend-down"></i> Total Expense</h3>
+        <p>₹{{ total_expense }}</p>
+      </div>
+    </div>
+
+    <div class="transactions">
+      <h2 style="font-size: 1.4em; font-weight: 600; color: #00b4db; margin-bottom: 10px;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Transactions</h2>
+      {% if transactions %}
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for txn in transactions %}
+          <tr>
+            <td>{{ txn.type.title() }}</td>
+            <td>{{ txn.category }}</td>
+            <td>₹{{ txn.amount }}</td>
+            <td>{{ txn.date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p style="color: #ff7675; font-weight: 500;">No recent transactions available.</p>
+      {% endif %}
+    </div>
+
+    <div class="actions">
+      <a href="/transactions"><i class="fa-solid fa-money-bill-wave"></i> Manage Transactions</a>
+      <a href="/budget"><i class="fa-solid fa-wallet"></i> View Budget</a>
+      <a href="/profile"><i class="fa-solid fa-user"></i> My Profile</a>
+      <a href="/categories"><i class="fa-solid fa-list"></i> Manage Categories</a>
+    </div>
+  </div>
+</body>
+</html>

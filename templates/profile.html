@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            background: linear-gradient(120deg, #232526, #3498db);
+            color: #f5f6fa;
+            transition: background 0.3s;
+        }
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+            background: rgba(44, 62, 80, 0.98);
+            padding: 36px 28px;
+            border-radius: 18px;
+            box-shadow: 0 10px 32px rgba(0,0,0,0.25);
+        }
+        .nav {
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(44, 62, 80, 0.98);
+            padding: 18px 0;
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+        }
+        .nav a {
+            text-decoration: none;
+            margin: 0 10px;
+            color: #f5f6fa;
+            font-weight: 500;
+            font-size: 1.08em;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav a:hover {
+            background: #3498db;
+            color: #fff200;
+        }
+        h2 {
+            text-align: center;
+            color: #fff200;
+            font-size: 2em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .form-card {
+            background: linear-gradient(135deg, #3498db 60%, #232526 100%);
+            border-radius: 16px;
+            padding: 32px 24px;
+            margin-bottom: 36px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+            color: #fff;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .form-card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+        }
+        form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            margin-bottom: 0;
+        }
+        label {
+            font-weight: bold;
+            color: #fff200;
+            margin-top: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            background: #f5f6fa;
+            color: #232526;
+            margin-bottom: 0;
+        }
+        button {
+            margin-top: 18px;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #3498db 60%, #232526 100%);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.08em;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            transition: background 0.3s, color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background: #fff200;
+            color: #3498db;
+            transform: scale(1.05);
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            color: #fff200;
+            text-align: center;
+            font-weight: bold;
+            background: #232526;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="{{ url_for('dashboard') }}"><i class="fa-solid fa-house"></i> Dashboard</a> |
+            <a href="{{ url_for('transactions') }}"><i class="fa-solid fa-money-bill-wave"></i> Transactions</a> |
+            <a href="{{ url_for('categories') }}"><i class="fa-solid fa-list"></i> Categories</a> |
+            <a href="{{ url_for('budget') }}"><i class="fa-solid fa-wallet"></i> Budgets</a> |
+            <a href="{{ url_for('profile') }}"><i class="fa-solid fa-user"></i> Profile</a> |
+            <a href="{{ url_for('analytics') }}"><i class="fa-solid fa-chart-pie"></i> Analytics</a> |
+            <a href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+        <div class="form-card">
+            <h2><i class="fa-solid fa-user"></i> User Profile</h2>
+            {% if message %}
+                <div class="message">{{ message }}</div>
+            {% endif %}
+            <form method="POST">
+                <label for="username">Username</label>
+                <input type="text" id="username" value="{{ user.username }}" disabled>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                <label for="password">New Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter new password" required>
+                <button type="submit"><i class="fa-solid fa-check"></i> Update Profile</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Categories</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(120deg, #232526, #764ba2);
+      color: #f5f6fa;
+      transition: background 0.3s;
+      min-height: 100vh;
+    }
+    .dashboard-nav {
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      margin-bottom: 30px;
+      background: rgba(44, 62, 80, 0.98);
+      padding: 18px 0;
+      border-radius: 0 0 18px 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    }
+    .dashboard-nav a {
+      text-decoration: none;
+      color: #f5f6fa;
+      font-weight: 500;
+      font-size: 1.08em;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dashboard-nav a:hover {
+      background: #764ba2;
+      color: #fff200;
+    }
+    .glass-card {
+      background: rgba(44, 62, 80, 0.98);
+      border-radius: 18px;
+      padding: 36px 28px;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.25);
+      width: 95%;
+      max-width: 850px;
+      color: #fff;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #fff200;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+      font-weight: 700;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .form-card {
+      background: linear-gradient(135deg, #764ba2 60%, #232526 100%);
+      border-radius: 16px;
+      padding: 32px 24px;
+      margin-bottom: 36px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+      color: #fff;
+      position: relative;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .form-card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+    }
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 18px;
+      margin-bottom: 0;
+    }
+    input, select, button {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      background: #f5f6fa;
+      color: #232526;
+      margin-bottom: 0;
+    }
+    button {
+      background: linear-gradient(90deg, #764ba2 60%, #232526 100%);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+      border-radius: 10px;
+      font-size: 1.08em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      grid-column: span 2;
+    }
+    button:hover {
+      background: #fff200;
+      color: #764ba2;
+      transform: scale(1.05);
+    }
+    .table-card {
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-top: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 14px 10px;
+      border-bottom: 1px solid #222;
+      text-align: left;
+      font-size: 1em;
+    }
+    th {
+      background: #764ba2;
+      color: #fff200;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    tr:hover td {
+      background: #232526;
+      color: #fff200;
+      transition: background 0.2s, color 0.2s;
+    }
+    @media screen and (max-width: 600px) {
+      .glass-card {
+        padding: 20px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      form {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .dashboard-nav {
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-nav">
+    <a href="/dashboard"><i class="fa-solid fa-house"></i> Dashboard</a>
+    <a href="/transactions"><i class="fa-solid fa-money-bill-wave"></i> Transactions</a>
+    <a href="/categories"><i class="fa-solid fa-list"></i> Categories</a>
+    <a href="/budget"><i class="fa-solid fa-wallet"></i> Budgets</a>
+    <a href="/profile"><i class="fa-solid fa-user"></i> Profile</a>
+    <a href="/analytics"><i class="fa-solid fa-chart-pie"></i> Analytics</a>
+    <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+  </div>
+
+  <div class="glass-card">
+    <h1><i class="fa-solid fa-list"></i> Manage Categories</h1>
+    <div class="form-card">
+      <form method="POST">
+        <input type="text" name="name" placeholder="Category Name" required />
+        <select name="type" required>
+          <option value="">Select Type</option>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+        <button type="submit"><i class="fa-solid fa-plus"></i> Add Category</button>
+      </form>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Category Name</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for category in categories %}
+          <tr>
+            <td>{{ category.name }}</td>
+            <td>{{ category.type }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

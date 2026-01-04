@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Transactions</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(120deg, #232526, #414345);
+      color: #f5f6fa;
+      transition: background 0.3s;
+    }
+    .navbar {
+      background: rgba(34, 49, 63, 0.95);
+      padding: 18px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+      border-bottom: 1px solid #222;
+    }
+    .navbar a {
+      color: #f5f6fa;
+      margin-left: 18px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1.08em;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .navbar a:hover {
+      background: #00b4db;
+      color: #232526;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 32px;
+      background: rgba(44, 62, 80, 0.98);
+      border-radius: 18px;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.25);
+    }
+    h2 {
+      text-align: center;
+      color: #00b4db;
+      margin-bottom: 30px;
+      font-size: 2em;
+      font-weight: 700;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .form-card {
+      background: linear-gradient(135deg, #00b4db 60%, #0083b0 100%);
+      border-radius: 16px;
+      padding: 32px 24px;
+      margin-bottom: 36px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+      color: #fff;
+      position: relative;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .form-card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+    }
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 18px;
+      margin-bottom: 0;
+    }
+    input, select, button {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      background: #f5f6fa;
+      color: #232526;
+      margin-bottom: 0;
+    }
+    button {
+      background: linear-gradient(90deg, #00b4db 60%, #0083b0 100%);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+      border-radius: 10px;
+      font-size: 1.08em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      grid-column: span 2;
+    }
+    button:hover {
+      background: #232526;
+      color: #00b4db;
+      transform: scale(1.05);
+    }
+    .history-card {
+      background: rgba(0,180,219,0.08);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-top: 24px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 14px 10px;
+      border-bottom: 1px solid #222;
+      text-align: center;
+      font-size: 1em;
+    }
+    th {
+      background: #00b4db;
+      color: #232526;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    tr:hover td {
+      background: #0083b0;
+      color: #fff;
+      transition: background 0.2s, color 0.2s;
+    }
+    .type-income {
+      color: #00ff99;
+      font-weight: 700;
+    }
+    .type-expense {
+      color: #ff4d4d;
+      font-weight: 700;
+    }
+    @media (max-width: 900px) {
+      .container {
+        padding: 12px;
+      }
+      .form-card {
+        padding: 18px 8px;
+      }
+      .history-card {
+        padding: 10px;
+      }
+    }
+    @media (max-width: 600px) {
+      .navbar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px 8px;
+      }
+      .navbar a {
+        margin-left: 0;
+        margin-bottom: 6px;
+      }
+      form {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/transactions">Transactions</a>
+      <a href="/categories">Categories</a>
+      <a href="/budget">Budgets</a>
+      <a href="/profile">Profile</a>
+      <a href="/analytics">Analytics</a>
+    </div>
+    <div>
+      <a href="/logout">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1 style="text-align:center; color:#00b4db; font-size:2.3em; font-weight:800; margin-bottom:30px; letter-spacing:1px;">
+      <i class="fa-solid fa-money-bill-wave"></i> Manage Transactions
+    </h1>
+    <div class="form-card">
+      <h2><i class="fa-solid fa-plus"></i> Add New Transaction</h2>
+      <form action="/add_transaction" method="POST">
+        <input type="text" name="title" placeholder="Title" required>
+        <input type="number" name="amount" step="0.01" placeholder="Amount" required>
+        <select name="type" required>
+          <option value="">Type</option>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+        <select name="category" required>
+          {% for cat in categories %}
+          <option value="{{ cat.name }}">{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+        <input type="date" name="date" required>
+        <button type="submit"><i class="fa-solid fa-check"></i> Add Transaction</button>
+      </form>
+    </div>
+    <div class="history-card">
+      <h2><i class="fa-solid fa-clock-rotate-left"></i> Transaction History</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Amount</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for txn in transactions %}
+          <tr>
+            <td>{{ txn.title }}</td>
+            <td>₹{{ txn.amount }}</td>
+            <td class="type-{{ txn.type }}">{{ txn.type.title() }}</td>
+            <td>{{ txn.category }}</td>
+            <td>{{ txn.date.strftime('%Y-%m-%d') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>
