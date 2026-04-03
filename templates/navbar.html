@@ -63,7 +63,7 @@
       {% if session.get('loggedin') %}
         <span class="pill">Hi, {{ session.username }}</span>
         <a class="btn btn-ghost btn-small" href="{{ url_for('logout') }}">
-          <i class="fa-solid fa-right-from-bracket"></i> Logout
+          <i class="fa-solid fa-right-from-bracket"></i> <span class="navtext">Logout</span>
         </a>
       {% endif %}
     </div>

@@ -907,3 +907,33 @@ body.theme-light .pill--warning { color: rgba(69, 46, 5, 0.98); background: rgba
   .navlinks { gap: 6px; }
   .navlink { font-size: 0.95rem; }
 }
+
+/* Extra-small phones: prevent navbar overflow by stacking rows */
+@media (max-width: 520px) {
+  .navbar__inner {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "brand"
+      "actions"
+      "nav";
+    align-items: start;
+  }
+
+  .nav-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nav-actions .pill {
+    max-width: 100%;
+  }
+}
+
+/* Tiny phones: hide non-essential text to guarantee fit */
+@media (max-width: 380px) {
+  .brand > span:last-child { display: none; }
+  .nav-actions .pill { display: none; }
+  .nav-actions .btn .navtext { display: none; }
+  .navlink { padding: 9px 10px; }
+}
