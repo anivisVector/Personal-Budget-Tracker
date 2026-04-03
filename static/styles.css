@@ -919,6 +919,20 @@ body.theme-light .pill--warning { color: rgba(69, 46, 5, 0.98); background: rgba
     align-items: start;
   }
 
+  .navlinks {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    justify-content: stretch;
+    border-radius: var(--radius-lg);
+  }
+
+  .navlink {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
   .nav-actions {
     justify-content: flex-start;
     flex-wrap: wrap;
@@ -936,4 +950,8 @@ body.theme-light .pill--warning { color: rgba(69, 46, 5, 0.98); background: rgba
   .nav-actions .pill { display: none; }
   .nav-actions .btn .navtext { display: none; }
   .navlink { padding: 9px 10px; }
+
+  .navlinks {
+    grid-template-columns: 1fr;
+  }
 }
