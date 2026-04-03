@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: personal-budget-tracker
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    preDeployCommand: python init_db.py
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SQLITE_PATH
+        value: /var/data/budget_tracker.db
+      - key: FLASK_DEBUG
+        value: "0"
+    disk:
+      name: app-data
+      mountPath: /var/data
+      sizeGB: 1

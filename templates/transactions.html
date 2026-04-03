@@ -1,240 +1,308 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Transactions</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body {
-      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-      margin: 0;
-      background: linear-gradient(120deg, #232526, #414345);
-      color: #f5f6fa;
-      transition: background 0.3s;
-    }
-    .navbar {
-      background: rgba(34, 49, 63, 0.95);
-      padding: 18px 36px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
-      border-bottom: 1px solid #222;
-    }
-    .navbar a {
-      color: #f5f6fa;
-      margin-left: 18px;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 1.08em;
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: background 0.2s, color 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .navbar a:hover {
-      background: #00b4db;
-      color: #232526;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 32px;
-      background: rgba(44, 62, 80, 0.98);
-      border-radius: 18px;
-      box-shadow: 0 10px 32px rgba(0,0,0,0.25);
-    }
-    h2 {
-      text-align: center;
-      color: #00b4db;
-      margin-bottom: 30px;
-      font-size: 2em;
-      font-weight: 700;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    .form-card {
-      background: linear-gradient(135deg, #00b4db 60%, #0083b0 100%);
-      border-radius: 16px;
-      padding: 32px 24px;
-      margin-bottom: 36px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.18);
-      color: #fff;
-      position: relative;
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .form-card:hover {
-      transform: scale(1.01);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
-    }
-    form {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 18px;
-      margin-bottom: 0;
-    }
-    input, select, button {
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1em;
-      background: #f5f6fa;
-      color: #232526;
-      margin-bottom: 0;
-    }
-    button {
-      background: linear-gradient(90deg, #00b4db 60%, #0083b0 100%);
-      color: #fff;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s, color 0.3s, transform 0.2s;
-      border-radius: 10px;
-      font-size: 1.08em;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-      grid-column: span 2;
-    }
-    button:hover {
-      background: #232526;
-      color: #00b4db;
-      transform: scale(1.05);
-    }
-    .history-card {
-      background: rgba(0,180,219,0.08);
-      border-radius: 12px;
-      padding: 18px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      margin-top: 24px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    th, td {
-      padding: 14px 10px;
-      border-bottom: 1px solid #222;
-      text-align: center;
-      font-size: 1em;
-    }
-    th {
-      background: #00b4db;
-      color: #232526;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-    tr:hover td {
-      background: #0083b0;
-      color: #fff;
-      transition: background 0.2s, color 0.2s;
-    }
-    .type-income {
-      color: #00ff99;
-      font-weight: 700;
-    }
-    .type-expense {
-      color: #ff4d4d;
-      font-weight: 700;
-    }
-    @media (max-width: 900px) {
-      .container {
-        padding: 12px;
-      }
-      .form-card {
-        padding: 18px 8px;
-      }
-      .history-card {
-        padding: 10px;
-      }
-    }
-    @media (max-width: 600px) {
-      .navbar {
-        flex-direction: column;
-        gap: 10px;
-        padding: 12px 8px;
-      }
-      .navbar a {
-        margin-left: 0;
-        margin-bottom: 6px;
-      }
-      form {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="navbar">
-    <div>
-      <a href="/dashboard">Dashboard</a>
-      <a href="/transactions">Transactions</a>
-      <a href="/categories">Categories</a>
-      <a href="/budget">Budgets</a>
-      <a href="/profile">Profile</a>
-      <a href="/analytics">Analytics</a>
+{% extends 'base.html' %}
+
+{% block title %}Transactions · Budget Tracker{% endblock %}
+
+{% block content %}
+  <div class="surface surface--pad surface--accent surface--accent-transactions">
+    <div class="header-row">
+      <div>
+        <h1 class="h1"><i class="fa-solid fa-money-bill-wave"></i> Transactions</h1>
+        <p class="sub">Filter, edit, export — keep everything tidy.</p>
+      </div>
+      <div class="actions">
+        <a class="btn btn-ghost" href="{{ url_for('export_transactions_csv', q=q, type=filter_type, category=filter_category, date_from=date_from, date_to=date_to, sort=sort) }}">
+          <i class="fa-solid fa-file-csv"></i> Export CSV
+        </a>
+        <a class="btn btn-ghost" href="{{ url_for('transactions') }}"><i class="fa-solid fa-rotate"></i> Reset</a>
+      </div>
     </div>
-    <div>
-      <a href="/logout">Logout</a>
+
+    <form class="form" method="GET" action="{{ url_for('transactions') }}">
+      <div class="field">
+        <label class="label" for="q">Search</label>
+        <input class="input" id="q" name="q" value="{{ q }}" placeholder="Category or description" />
+      </div>
+      <div class="field">
+        <label class="label" for="type">Type</label>
+        <select class="select" id="type" name="type">
+          <option value="">All</option>
+          <option value="income" {% if filter_type == 'income' %}selected{% endif %}>Income</option>
+          <option value="expense" {% if filter_type == 'expense' %}selected{% endif %}>Expense</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label" for="category">Category</label>
+        <select class="select" id="category" name="category">
+          <option value="">All</option>
+          {% for cat in categories %}
+            <option value="{{ cat.name }}" {% if filter_category == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label class="label" for="date_from">From</label>
+        <input class="input" id="date_from" type="date" name="date_from" value="{{ date_from }}" />
+      </div>
+      <div class="field">
+        <label class="label" for="date_to">To</label>
+        <input class="input" id="date_to" type="date" name="date_to" value="{{ date_to }}" />
+      </div>
+      <div class="field">
+        <label class="label" for="sort">Sort</label>
+        <select class="select" id="sort" name="sort">
+          <option value="date_desc" {% if sort == 'date_desc' %}selected{% endif %}>Newest first</option>
+          <option value="date_asc" {% if sort == 'date_asc' %}selected{% endif %}>Oldest first</option>
+          <option value="amount_desc" {% if sort == 'amount_desc' %}selected{% endif %}>Amount (high → low)</option>
+          <option value="amount_asc" {% if sort == 'amount_asc' %}selected{% endif %}>Amount (low → high)</option>
+        </select>
+      </div>
+      <div class="field field--full">
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-filter"></i> Apply filters</button>
+      </div>
+    </form>
+
+    <div class="row mt-18">
+      <span class="pill"><i class="fa-solid fa-list"></i> Showing {{ total_count }} transaction(s)</span>
+      <span class="pill"><i class="fa-solid fa-arrow-trend-up"></i> Income: ₹{{ filtered_income }}</span>
+      <span class="pill"><i class="fa-solid fa-arrow-trend-down"></i> Expense: ₹{{ filtered_expense }}</span>
     </div>
   </div>
 
-  <div class="container">
-    <h1 style="text-align:center; color:#00b4db; font-size:2.3em; font-weight:800; margin-bottom:30px; letter-spacing:1px;">
-      <i class="fa-solid fa-money-bill-wave"></i> Manage Transactions
-    </h1>
-    <div class="form-card">
-      <h2><i class="fa-solid fa-plus"></i> Add New Transaction</h2>
-      <form action="/add_transaction" method="POST">
-        <input type="text" name="title" placeholder="Title" required>
-        <input type="number" name="amount" step="0.01" placeholder="Amount" required>
-        <select name="type" required>
-          <option value="">Type</option>
+  {% if edit_txn %}
+    <div class="surface surface--pad mt-18 surface--accent surface--accent-transactions">
+      <div class="header-row">
+        <div>
+          <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-pen-to-square"></i> Edit transaction</h2>
+          <p class="sub">Update details and save.</p>
+        </div>
+        <a class="btn btn-ghost" href="{{ url_for('transactions', q=q, type=filter_type, category=filter_category, date_from=date_from, date_to=date_to, sort=sort, page=page) }}">
+          <i class="fa-solid fa-xmark"></i> Cancel
+        </a>
+      </div>
+
+      <form class="form" method="POST" action="{{ url_for('edit_transaction', txn_id=edit_txn.id) }}">
+        <div class="field">
+          <label class="label" for="et_amount">Amount</label>
+          <input class="input" id="et_amount" type="number" name="amount" step="0.01" value="{{ edit_txn.amount }}" required />
+        </div>
+        <div class="field">
+          <label class="label" for="et_type">Type</label>
+          <select class="select" id="et_type" name="type" required>
+            <option value="income" {% if edit_txn.type == 'income' %}selected{% endif %}>Income</option>
+            <option value="expense" {% if edit_txn.type == 'expense' %}selected{% endif %}>Expense</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="et_category">Category</label>
+          <select class="select" id="et_category" name="category" required>
+            {% for cat in categories %}
+              <option value="{{ cat.name }}" data-type="{{ cat.type }}" {% if edit_txn.category == cat.name %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="et_date">Date</label>
+          <input class="input" id="et_date" type="date" name="date" value="{{ edit_txn.date if edit_txn.date else '' }}" required />
+        </div>
+        <div class="field field--full">
+          <label class="label" for="et_desc">Description</label>
+          <input class="input" id="et_desc" type="text" name="description" value="{{ edit_txn.description or '' }}" placeholder="Optional note" />
+        </div>
+        <div class="field field--full">
+          <button class="btn btn-primary" type="submit"><i class="fa-solid fa-check"></i> Save changes</button>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+
+  <div class="surface surface--pad mt-18 surface--accent surface--accent-transactions">
+    <div class="header-row">
+      <div>
+        <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-plus"></i> Add transaction</h2>
+        <p class="sub">Use descriptions for quick recall later.</p>
+      </div>
+    </div>
+
+    <form class="form" method="POST" action="/add_transaction">
+      <div class="field">
+        <label class="label" for="amount">Amount</label>
+        <input class="input" id="amount" type="number" name="amount" step="0.01" placeholder="e.g., 500" required />
+      </div>
+      <div class="field">
+        <label class="label" for="add_type">Type</label>
+        <select class="select" id="add_type" name="type" required>
+          <option value="">Select</option>
           <option value="income">Income</option>
           <option value="expense">Expense</option>
         </select>
-        <select name="category" required>
+      </div>
+      <div class="field">
+        <label class="label" for="add_category">Category</label>
+        <select class="select" id="add_category" name="category" required>
+          <option value="">Select</option>
           {% for cat in categories %}
-          <option value="{{ cat.name }}">{{ cat.name }}</option>
+            <option value="{{ cat.name }}" data-type="{{ cat.type }}">{{ cat.name }}</option>
           {% endfor %}
         </select>
-        <input type="date" name="date" required>
-        <button type="submit"><i class="fa-solid fa-check"></i> Add Transaction</button>
-      </form>
-    </div>
-    <div class="history-card">
-      <h2><i class="fa-solid fa-clock-rotate-left"></i> Transaction History</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Amount</th>
-            <th>Type</th>
-            <th>Category</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for txn in transactions %}
-          <tr>
-            <td>{{ txn.title }}</td>
-            <td>₹{{ txn.amount }}</td>
-            <td class="type-{{ txn.type }}">{{ txn.type.title() }}</td>
-            <td>{{ txn.category }}</td>
-            <td>{{ txn.date.strftime('%Y-%m-%d') }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+      </div>
+      <div class="field">
+        <label class="label" for="date">Date</label>
+        <input class="input" id="date" type="date" name="date" required />
+      </div>
+      <div class="field field--full">
+        <label class="label" for="desc">Description</label>
+        <input class="input" id="desc" type="text" name="description" placeholder="Optional note (e.g., weekly shopping)" />
+      </div>
+      <div class="field field--full">
+        <button class="btn btn-primary" type="submit"><i class="fa-solid fa-check"></i> Add</button>
+      </div>
+    </form>
   </div>
 
-</body>
-</html>
+  <div class="surface surface--pad mt-18 surface--accent surface--accent-transactions">
+    <div class="header-row">
+      <div>
+        <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-clock-rotate-left"></i> History</h2>
+        <p class="sub">Click edit to update, export when needed.</p>
+      </div>
+    </div>
+
+    {% if transactions %}
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Description</th>
+              <th style="width: 150px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for txn in transactions %}
+              <tr>
+                <td>{{ txn.date if txn.date else '' }}</td>
+                <td>
+                  <div style="font-weight: 800;">{{ txn.category }}</div>
+                  {% if txn.title and txn.title != txn.category %}
+                    <div class="sub" style="margin: 2px 0 0;">{{ txn.title }}</div>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if txn.type == 'income' %}
+                    <span class="pill pill--income">Income</span>
+                  {% else %}
+                    <span class="pill pill--expense">Expense</span>
+                  {% endif %}
+                </td>
+                <td>₹{{ txn.amount }}</td>
+                <td>
+                  <div class="truncate" title="{{ txn.description or '' }}">{{ txn.description or '—' }}</div>
+                </td>
+                <td>
+                  <div class="actions">
+                    <a class="btn btn-ghost btn-small" href="{{ url_for('edit_transaction', txn_id=txn.id) }}">
+                      <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </a>
+                    <form method="POST" action="{{ url_for('delete_transaction', txn_id=txn.id) }}" onsubmit="return confirm('Delete this transaction?')">
+                      <button class="btn btn-danger btn-small" type="submit"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row mt-18" style="justify-content: space-between;">
+        <div class="row">
+          {% if page > 1 %}
+            <a class="btn btn-ghost btn-small" href="{{ url_for('transactions', q=q, type=filter_type, category=filter_category, date_from=date_from, date_to=date_to, sort=sort, per_page=per_page, page=page-1) }}">
+              <i class="fa-solid fa-arrow-left"></i> Prev
+            </a>
+          {% endif %}
+          {% if page < total_pages %}
+            <a class="btn btn-ghost btn-small" href="{{ url_for('transactions', q=q, type=filter_type, category=filter_category, date_from=date_from, date_to=date_to, sort=sort, per_page=per_page, page=page+1) }}">
+              Next <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          {% endif %}
+        </div>
+        <span class="pill">Page {{ page }} / {{ total_pages }}</span>
+      </div>
+    {% else %}
+      <div class="card">
+        <div class="stat">
+          <div>
+            <div class="stat__label">No results</div>
+            <div class="sub">Try widening your filters or add a new transaction.</div>
+          </div>
+          <span class="pill"><i class="fa-solid fa-magnifying-glass"></i></span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    function cacheSelectOptions(selectEl) {
+      if (!selectEl || selectEl._allOptions) return;
+      selectEl._allOptions = Array.from(selectEl.options).map((opt) => ({
+        value: opt.value,
+        text: opt.text,
+        type: (opt.dataset.type || '').toLowerCase(),
+        isPlaceholder: !opt.value,
+      }));
+    }
+
+    function rebuildCategoryOptions(typeEl, categoryEl) {
+      if (!typeEl || !categoryEl) return;
+      cacheSelectOptions(categoryEl);
+
+      const selectedValue = categoryEl.value;
+      const type = (typeEl.value || '').toLowerCase();
+      const all = categoryEl._allOptions || [];
+
+      const next = type
+        ? all.filter((o) => o.isPlaceholder || o.type === type)
+        : all.filter((o) => o.isPlaceholder);
+
+      categoryEl.innerHTML = '';
+      for (const o of next) {
+        const opt = document.createElement('option');
+        opt.value = o.value;
+        opt.textContent = o.text;
+        categoryEl.appendChild(opt);
+      }
+
+      const stillExists = next.some((o) => o.value === selectedValue);
+      if (stillExists) {
+        categoryEl.value = selectedValue;
+      } else if (next.some((o) => o.isPlaceholder)) {
+        categoryEl.value = '';
+      } else if (next.length) {
+        categoryEl.value = next[0].value;
+      }
+    }
+
+    function bindCategoryFiltering(typeId, categoryId) {
+      const typeEl = document.getElementById(typeId);
+      const categoryEl = document.getElementById(categoryId);
+      if (!typeEl || !categoryEl) return;
+      cacheSelectOptions(categoryEl);
+      const apply = function () {
+        rebuildCategoryOptions(typeEl, categoryEl);
+      };
+      typeEl.addEventListener('change', apply);
+      apply();
+    }
+
+    (function () {
+      bindCategoryFiltering('add_type', 'add_category');
+      bindCategoryFiltering('et_type', 'et_category');
+    })();
+  </script>
+{% endblock %}

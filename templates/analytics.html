@@ -1,201 +1,168 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Analytics</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% extends 'base.html' %}
+
+{% block title %}Analytics · Budget Tracker{% endblock %}
+
+{% block head %}
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-      background: linear-gradient(120deg, #232526, #764ba2);
-      color: #f5f6fa;
-      margin: 0;
-      padding: 0;
-      transition: background 0.3s;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 40px auto;
-      padding: 36px 28px;
-      background: rgba(44, 62, 80, 0.98);
-      box-shadow: 0 10px 32px rgba(0,0,0,0.25);
-      border-radius: 18px;
-    }
-    h2 {
-      text-align: center;
-      color: #fff200;
-      font-size: 2em;
-      font-weight: 700;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    .charts {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      margin-top: 40px;
-      gap: 24px;
-    }
-    .chart-card {
-      background: linear-gradient(135deg, #764ba2 60%, #232526 100%);
-      border-radius: 16px;
-      padding: 24px 18px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.18);
-      color: #fff;
-      width: 480px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    canvas {
-      max-width: 420px;
-      background: #fff;
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-    .back {
-      display: inline-block;
-      margin-top: 20px;
-      text-decoration: none;
-      color: #764ba2;
-      background: #fff200;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 1.08em;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-      transition: background 0.2s, color 0.2s;
-    }
-    .back:hover {
-      background: #764ba2;
-      color: #fff200;
-    }
-    @media (max-width: 900px) {
-      .container {
-        padding: 12px;
-      }
-      .charts {
-        flex-direction: column;
-        gap: 18px;
-      }
-      .chart-card {
-        width: 100%;
-        min-width: 180px;
-      }
-    }
-  </style>
-</head>
-<body>
-    <div class="container">
-      <h2><i class="fa-solid fa-chart-pie"></i> Spending & Income Analytics</h2>
-      <div class="charts">
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-          <div class="chart-card">
-            <canvas id="monthlyChart"></canvas>
-          </div>
-          <div class="chart-card">
-            <canvas id="balanceChart"></canvas>
-          </div>
-        </div>
-        <div class="chart-card">
-          <canvas id="categoryChart"></canvas>
-        </div>
+{% endblock %}
+
+{% block content %}
+  <div class="surface surface--pad surface--accent surface--accent-analytics">
+    <div class="header-row">
+      <div>
+        <h1 class="h1"><i class="fa-solid fa-chart-pie"></i> Analytics</h1>
+        <p class="sub">Visual insights for income, expenses, and balance.</p>
       </div>
-      <div style="text-align: center;">
-        <a class="back" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+      <div class="actions">
+        <form method="GET" action="{{ url_for('analytics') }}" class="row">
+          <select class="select" name="months" aria-label="Months" style="min-width: 160px;">
+            {% for m in [3, 6, 12, 24, 36] %}
+              <option value="{{ m }}" {% if months == m %}selected{% endif %}>Last {{ m }} months</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-ghost" type="submit"><i class="fa-solid fa-filter"></i> Apply</button>
+        </form>
       </div>
     </div>
 
+    <div class="grid-3 mt-18">
+      <div class="card">
+        <div class="stat">
+          <div>
+            <div class="stat__label">Top expense category</div>
+            <div class="stat__value">{{ top_category or '—' }}</div>
+          </div>
+          <span class="pill"><i class="fa-solid fa-crown"></i></span>
+        </div>
+        <div class="help">₹{{ '%.2f'|format(top_category_total) }}</div>
+      </div>
+      <div class="card">
+        <div class="stat">
+          <div>
+            <div class="stat__label">Highest expense month</div>
+            <div class="stat__value">{{ highest_month or '—' }}</div>
+          </div>
+          <span class="pill"><i class="fa-solid fa-mountain"></i></span>
+        </div>
+        <div class="help">₹{{ '%.2f'|format(highest_month_value) }}</div>
+      </div>
+      <div class="card">
+        <div class="stat">
+          <div>
+            <div class="stat__label">Avg monthly expense</div>
+            <div class="stat__value">₹{{ '%.2f'|format(avg_monthly_expense) }}</div>
+          </div>
+          <span class="pill"><i class="fa-solid fa-wave-square"></i></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2 mt-18">
+    <div class="surface surface--pad surface--accent surface--accent-analytics">
+      <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-chart-column"></i> Income vs Expenses</h2>
+      <p class="sub">Monthly totals (last {{ months }} months).</p>
+      <div class="mt-12" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px;">
+        <canvas id="monthlyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="surface surface--pad surface--accent surface--accent-analytics">
+      <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-chart-line"></i> Cumulative Balance</h2>
+      <p class="sub">Running balance across the selected period.</p>
+      <div class="mt-12" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px;">
+        <canvas id="balanceChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="surface surface--pad mt-18 surface--accent surface--accent-analytics">
+    <div class="header-row">
+      <div>
+        <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-tags"></i> Expense breakdown</h2>
+        <p class="sub">All-time expense totals by category.</p>
+      </div>
+    </div>
+    <div class="mt-12" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px; max-width: 520px; margin: 0 auto;">
+      <canvas id="categoryChart"></canvas>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
   <script>
-    // Balance chart data
-    const balanceCtx = document.getElementById('balanceChart').getContext('2d');
-    const balanceLabels = [
+    const monthlyLabels = [
       {% for row in monthly_data %}
         "{{ row.month }}/{{ row.year }}"{% if not loop.last %}, {% endif %}
       {% endfor %}
     ];
+
+    const incomeValues = [
+      {% for row in monthly_data %}
+        {{ row.income or 0 }}{% if not loop.last %}, {% endif %}
+      {% endfor %}
+    ];
+
+    const expenseValues = [
+      {% for row in monthly_data %}
+        {{ row.expense or 0 }}{% if not loop.last %}, {% endif %}
+      {% endfor %}
+    ];
+
     const balanceValues = [
       {% for row in monthly_data %}
         {{ row.balance or 0 }}{% if not loop.last %}, {% endif %}
       {% endfor %}
     ];
-    const balanceData = {
-      labels: balanceLabels,
-      datasets: [{
-        label: 'Cumulative Balance',
-        data: balanceValues,
-        borderColor: 'rgba(76, 201, 240, 1)',
-        backgroundColor: 'rgba(76, 201, 240, 0.2)',
-        fill: true,
-        tension: 0.3
-      }]
-    };
 
-    new Chart(balanceCtx, {
-      type: 'line',
-      data: balanceData,
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: 'Cumulative Balance Over Time'
-          }
-        }
-      }
-    });
-    const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-
-    const monthlyData = {
-      labels: [
-        {% for row in monthly_data %}
-          "{{ row.month }}/{{ row.year }}"{% if not loop.last %}, {% endif %}
-        {% endfor %}
-      ],
-      datasets: [
-        {
-          label: 'Income',
-          data: [
-            {% for row in monthly_data %}
-              {{ row.income or 0 }}{% if not loop.last %}, {% endif %}
-            {% endfor %}
-          ],
-          backgroundColor: 'rgba(54, 162, 235, 0.7)'
-        },
-        {
-          label: 'Expenses',
-          data: [
-            {% for row in monthly_data %}
-              {{ row.expense or 0 }}{% if not loop.last %}, {% endif %}
-            {% endfor %}
-          ],
-          backgroundColor: 'rgba(255, 99, 132, 0.7)'
-        }
-      ]
-    };
-
-    new Chart(monthlyCtx, {
+    new Chart(document.getElementById('monthlyChart').getContext('2d'), {
       type: 'bar',
-      data: monthlyData,
+      data: {
+        labels: monthlyLabels,
+        datasets: [
+          {
+            label: 'Income',
+            data: incomeValues,
+            backgroundColor: 'rgba(76, 201, 240, 0.8)'
+          },
+          {
+            label: 'Expenses',
+            data: expenseValues,
+            backgroundColor: 'rgba(255, 99, 132, 0.8)'
+          }
+        ]
+      },
       options: {
         responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: 'Monthly Income vs Expenses'
-          }
-        }
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'top' } },
+        scales: { x: { stacked: false }, y: { beginAtZero: true } }
       }
     });
 
-    // Prepare category labels and data from Jinja2
+    new Chart(document.getElementById('balanceChart').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: monthlyLabels,
+        datasets: [
+          {
+            label: 'Balance',
+            data: balanceValues,
+            borderColor: 'rgba(76, 201, 240, 1)',
+            backgroundColor: 'rgba(76, 201, 240, 0.12)',
+            fill: true,
+            tension: 0.35
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'top' } },
+        scales: { y: { beginAtZero: false } }
+      }
+    });
+
     const categoryLabels = [
       {% for c in category_data %}
         "{{ c.category }}"{% if not loop.last %}, {% endif %}
@@ -206,40 +173,28 @@
         {{ c.total or 0 }}{% if not loop.last %}, {% endif %}
       {% endfor %}
     ];
-    // Generate unique colors in JS
-    function getColor(i) {
-      const palette = [
-        '#FF6384', '#36A2EB', '#FFCE56', '#8E44AD', '#2ECC71', '#E67E22', '#3498DB',
-        '#F39C12', '#1ABC9C', '#D35400', '#C0392B', '#7F8C8D', '#27AE60', '#2980B9', '#9B59B6', '#34495E', '#16A085', '#E84393', '#00B894', '#6C5CE7'
-      ];
-      if (i < palette.length) return palette[i];
-      const hue = (i * 137) % 360;
-      return `hsl(${hue}, 70%, 55%)`;
-    }
-    const categoryColors = categoryLabels.map((_, i) => getColor(i));
+    const categoryColors = [
+      {% for color in category_colors %}
+        "{{ color }}"{% if not loop.last %}, {% endif %}
+      {% endfor %}
+    ];
 
-    const categoryData = {
-      labels: categoryLabels,
-      datasets: [{
-        label: 'Category Breakdown',
-        data: categoryValues,
-        backgroundColor: categoryColors
-      }]
-    };
-
-    new Chart(categoryCtx, {
+    new Chart(document.getElementById('categoryChart').getContext('2d'), {
       type: 'doughnut',
-      data: categoryData,
+      data: {
+        labels: categoryLabels,
+        datasets: [{ data: categoryValues, backgroundColor: categoryColors }]
+      },
       options: {
         responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: 'Expenses by Category'
-          }
-        }
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } }
       }
     });
+
+    // Give charts a usable height
+    document.getElementById('monthlyChart').parentElement.style.height = '320px';
+    document.getElementById('balanceChart').parentElement.style.height = '320px';
+    document.getElementById('categoryChart').parentElement.style.height = '420px';
   </script>
-</body>
-</html>
+{% endblock %}

@@ -1,42 +1,71 @@
 <nav class="navbar">
-  <ul>
-    <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-    <li><a href="{{ url_for('profile') }}">Profile</a></li>
-    <li><a href="{{ url_for('transactions') }}">Transactions</a></li>
-    <li><a href="{{ url_for('categories') }}">Categories</a></li>
-    <li><a href="{{ url_for('budget') }}">Budgets</a></li>
-    <li><a href="{{ url_for('logout') }}">Logout</a></li>
-  </ul>
-</nav>
+  <div class="navbar__inner">
+    <a class="brand" href="{{ url_for('home') }}">
+      <span class="logo" aria-hidden="true">
+        <svg class="logo__svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="btLogoGrad" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="var(--accent)" />
+              <stop offset="1" stop-color="var(--accent-2)" />
+            </linearGradient>
+          </defs>
+          <rect x="3.25" y="3.25" width="17.5" height="17.5" rx="6" stroke="url(#btLogoGrad)" stroke-width="1.5" />
+          <path d="M7.6 14.6V16.9" stroke="url(#btLogoGrad)" stroke-width="1.7" stroke-linecap="round" />
+          <path d="M11.8 11.7V16.9" stroke="url(#btLogoGrad)" stroke-width="1.7" stroke-linecap="round" />
+          <path d="M16.4 9.2V16.9" stroke="url(#btLogoGrad)" stroke-width="1.7" stroke-linecap="round" />
+          <path d="M7.2 9.9C9.2 9.2 10.6 10.6 12.2 10.2C13.7 9.8 14.6 8.4 16.7 8.2" stroke="rgba(238, 242, 255, 0.55)" stroke-width="1.2" stroke-linecap="round" />
+        </svg>
+      </span>
+      <span>Budget Tracker</span>
+    </a>
 
-<style>
-  .navbar {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    padding: 12px 20px;
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin: 20px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.3);
-  }
-  .navbar ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 25px;
-  }
-  .navbar a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 10px 18px;
-    border-radius: 10px;
-    transition: background 0.3s ease, transform 0.2s ease;
-  }
-  .navbar a:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: scale(1.05);
-  }
-</style>
+    {% if session.get('loggedin') %}
+      {% if request.endpoint != 'home' %}
+        <div class="navlinks">
+          <a class="navlink {% if request.endpoint == 'dashboard' %}is-active{% endif %}" href="{{ url_for('dashboard') }}">
+            <i class="fa-solid fa-house"></i> <span class="navtext">Dashboard</span>
+          </a>
+          <a class="navlink {% if request.endpoint == 'transactions' %}is-active{% endif %}" href="{{ url_for('transactions') }}">
+            <i class="fa-solid fa-money-bill-wave"></i> <span class="navtext">Transactions</span>
+          </a>
+          <a class="navlink {% if request.endpoint == 'categories' %}is-active{% endif %}" href="{{ url_for('categories') }}">
+            <i class="fa-solid fa-list"></i> <span class="navtext">Categories</span>
+          </a>
+          <a class="navlink {% if request.endpoint == 'budget' %}is-active{% endif %}" href="{{ url_for('budget') }}">
+            <i class="fa-solid fa-wallet"></i> <span class="navtext">Budgets</span>
+          </a>
+          <a class="navlink {% if request.endpoint == 'analytics' %}is-active{% endif %}" href="{{ url_for('analytics') }}">
+            <i class="fa-solid fa-chart-pie"></i> <span class="navtext">Analytics</span>
+          </a>
+          <a class="navlink {% if request.endpoint == 'profile' %}is-active{% endif %}" href="{{ url_for('profile') }}">
+            <i class="fa-solid fa-user"></i> <span class="navtext">Profile</span>
+          </a>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="navlinks">
+        <a class="navlink {% if request.endpoint == 'home' %}is-active{% endif %}" href="{{ url_for('home') }}">
+          <i class="fa-solid fa-house"></i> <span class="navtext">Home</span>
+        </a>
+        <a class="navlink {% if request.endpoint == 'login' %}is-active{% endif %}" href="{{ url_for('login') }}">
+          <i class="fa-solid fa-right-to-bracket"></i> <span class="navtext">Login</span>
+        </a>
+        <a class="navlink {% if request.endpoint == 'register' %}is-active{% endif %}" href="{{ url_for('register') }}">
+          <i class="fa-solid fa-user-plus"></i> <span class="navtext">Register</span>
+        </a>
+      </div>
+    {% endif %}
+
+    <div class="nav-actions">
+      <button class="icon-btn" type="button" onclick="toggleTheme()" title="Toggle theme">
+        <i class="fa-solid fa-circle-half-stroke"></i>
+      </button>
+      {% if session.get('loggedin') %}
+        <span class="pill">Hi, {{ session.username }}</span>
+        <a class="btn btn-ghost btn-small" href="{{ url_for('logout') }}">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</nav>

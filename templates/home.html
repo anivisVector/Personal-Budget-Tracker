@@ -1,80 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Welcome to Budget Tracker</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-      min-height: 100vh;
-      background: linear-gradient(120deg, #f5f6fa 60%, #e0eafc 100%);
-      color: #232526;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .welcome-card {
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.10);
-      padding: 48px 36px;
-      text-align: center;
-      max-width: 400px;
-      border: 1.5px solid #00b4db;
-    }
-    h1 {
-      font-size: 2.2em;
-      color: #00b4db;
-      margin-bottom: 18px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-shadow: none;
-    }
-    .welcome-msg {
-      font-size: 1.1em;
-      margin-bottom: 32px;
-      color: #232526;
-      font-weight: 500;
-      text-shadow: none;
-    }
-    .actions {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      margin-top: 18px;
-    }
-    .actions a {
-      text-decoration: none;
-      background: #00b4db;
-      color: #fff;
-      padding: 14px 0;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 1.08em;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-      transition: background 0.2s, color 0.2s, transform 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .actions a:hover {
-      background: #232526;
-      color: #00b4db;
-      transform: scale(1.05);
-    }
-  </style>
-</head>
-<body>
-  <div class="welcome-card">
-    <h1><i class="fa-solid fa-coins"></i> Budget Tracker</h1>
-    <div class="welcome-msg">Welcome to Budget Tracker!<br>Manage your finances, track expenses, and visualize your budget with ease.</div>
-    <div class="actions">
-      <a href="/login"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
-      <a href="/register"><i class="fa-solid fa-user-plus"></i> Register</a>
-    </div>
+{% extends 'base.html' %}
+
+{% block title %}Welcome · Budget Tracker{% endblock %}
+
+{% block content %}
+  <div class="home">
+    <section class="surface surface--pad surface--accent surface--accent-home home-hero">
+      <div class="header-row">
+        <div>
+          <h1 class="h1"><i class="fa-solid fa-coins"></i> Budget Tracker</h1>
+          <p class="sub">Track spending, set budgets, and see your trends — fast.</p>
+        </div>
+        <div class="actions">
+          {% if session.get('loggedin') %}
+            <a class="btn btn-primary" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-arrow-right"></i> Go to Dashboard</a>
+          {% else %}
+            <a class="btn btn-primary" href="{{ url_for('login') }}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+            <a class="btn btn-ghost" href="{{ url_for('register') }}"><i class="fa-solid fa-user-plus"></i> Create account</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="grid-3 mt-18">
+        <div class="card home-feature">
+          <div class="stat">
+            <div>
+              <div class="stat__label">Fast logging</div>
+              <div class="sub">Add income/expense in seconds.</div>
+            </div>
+            <span class="pill"><i class="fa-solid fa-bolt"></i></span>
+          </div>
+        </div>
+        <div class="card home-feature">
+          <div class="stat">
+            <div>
+              <div class="stat__label">Budgets that work</div>
+              <div class="sub">Progress bars + overspend alerts.</div>
+            </div>
+            <span class="pill"><i class="fa-solid fa-wallet"></i></span>
+          </div>
+        </div>
+        <div class="card home-feature">
+          <div class="stat">
+            <div>
+              <div class="stat__label">Clean analytics</div>
+              <div class="sub">Charts + insights, no clutter.</div>
+            </div>
+            <span class="pill"><i class="fa-solid fa-chart-line"></i></span>
+          </div>
+        </div>
+      </div>
+
+      {% if not session.get('loggedin') %}
+        <p class="help mt-12">Tip: press <span class="kbd">Ctrl</span> + <span class="kbd">L</span> to jump to URL bar quickly.</p>
+      {% endif %}
+    </section>
+
+    <section class="surface surface--pad home-band">
+      <div class="header-row">
+        <div>
+          <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-compass"></i> How it works</h2>
+          <p class="sub">A simple flow — built for daily use.</p>
+        </div>
+        {% if session.get('loggedin') %}
+          <div class="actions">
+            <a class="btn btn-ghost" href="{{ url_for('transactions') }}"><i class="fa-solid fa-plus"></i> Add transaction</a>
+            <a class="btn btn-ghost" href="{{ url_for('budget') }}"><i class="fa-solid fa-wallet"></i> Set budget</a>
+            <a class="btn btn-ghost" href="{{ url_for('analytics') }}"><i class="fa-solid fa-chart-pie"></i> View analytics</a>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="grid-3 mt-18">
+        <div class="card home-step">
+          <div class="stat">
+            <div>
+              <div class="stat__label">1) Log</div>
+              <div class="sub">Record income and expenses with categories.</div>
+            </div>
+            <span class="pill"><i class="fa-solid fa-pen"></i></span>
+          </div>
+        </div>
+        <div class="card home-step">
+          <div class="stat">
+            <div>
+              <div class="stat__label">2) Budget</div>
+              <div class="sub">Set monthly limits and watch spending progress.</div>
+            </div>
+            <span class="pill"><i class="fa-solid fa-layer-group"></i></span>
+          </div>
+        </div>
+        <div class="card home-step">
+          <div class="stat">
+            <div>
+              <div class="stat__label">3) Improve</div>
+              <div class="sub">Use insights to adjust habits and hit goals.</div>
+            </div>
+            <span class="pill"><i class="fa-solid fa-chart-line"></i></span>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
-</body>
-</html>
+{% endblock %}
