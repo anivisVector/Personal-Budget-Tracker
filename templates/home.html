@@ -3,56 +3,132 @@
 {% block title %}Welcome · Budget Tracker{% endblock %}
 
 {% block content %}
-  <div class="home">
-    <section class="surface surface--pad surface--accent surface--accent-home home-hero">
+  <div class="home landing">
+    <section class="surface surface--pad surface--accent surface--accent-home landing-hero" id="top">
+      <div class="landing-hero__grid">
+        <div class="landing-hero__copy">
+          <div class="landing-badges">
+            <span class="pill pill--info"><i class="fa-solid fa-shield-halved"></i> Personal Budget Tracker</span>
+            {% if session.get('loggedin') %}
+              <span class="pill pill--income"><i class="fa-solid fa-circle-check"></i> Connected</span>
+            {% endif %}
+          </div>
+
+          <h1 class="landing-title">Smarter money habits with <span class="text-grad">Budget Tracker</span></h1>
+          <p class="landing-sub">Track spending, set monthly budgets, and understand trends with a clean dashboard built for daily use.</p>
+
+          <div class="actions mt-18">
+            {% if session.get('loggedin') %}
+              <a class="btn btn-primary" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-arrow-right"></i> Go to Dashboard</a>
+              <a class="btn btn-ghost" href="{{ url_for('transactions') }}"><i class="fa-solid fa-plus"></i> Add a transaction</a>
+            {% else %}
+              <a class="btn btn-primary" href="{{ url_for('register') }}"><i class="fa-solid fa-user-plus"></i> Get started</a>
+              <a class="btn btn-ghost" href="{{ url_for('login') }}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+            {% endif %}
+          </div>
+
+          <div class="landing-checks" role="list">
+            <div class="landing-check" role="listitem"><i class="fa-solid fa-circle-check landing-check--warning"></i> Budget progress + overspend alerts</div>
+            <div class="landing-check" role="listitem"><i class="fa-solid fa-circle-check landing-check--info"></i> Search + filters for transactions</div>
+            <div class="landing-check" role="listitem"><i class="fa-solid fa-circle-check landing-check--success"></i> One-click CSV export</div>
+          </div>
+        </div>
+
+        <div class="landing-hero__art" aria-hidden="true">
+          <div class="landing-mock">
+            <div class="landing-mock__top">
+              <div class="landing-mock__brand">
+                <span class="landing-mock__dot"></span>
+                <span class="landing-mock__title">Overview</span>
+              </div>
+              <span class="pill pill--info landing-mock__status"><i class="fa-solid fa-bolt"></i> Live</span>
+            </div>
+
+            <div class="landing-mock__grid">
+              <div class="landing-mock__kpi">
+                <div class="landing-mock__kpiLabel">Balance</div>
+                <div class="landing-mock__kpiValue">₹12,450</div>
+              </div>
+              <div class="landing-mock__kpi">
+                <div class="landing-mock__kpiLabel">This month</div>
+                <div class="landing-mock__kpiValue">₹3,980</div>
+              </div>
+            </div>
+
+            <div class="landing-mock__bars">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-strip" aria-label="Product highlights">
+      <div class="landing-strip__inner">
+        <div class="landing-highlight">
+          <div class="landing-highlight__icon"><i class="fa-solid fa-layer-group"></i></div>
+          <div>
+            <div class="landing-highlight__title">Monthly budgets</div>
+            <div class="landing-highlight__sub">Set limits by category, track progress.</div>
+          </div>
+        </div>
+        <div class="landing-highlight">
+          <div class="landing-highlight__icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <div>
+            <div class="landing-highlight__title">Fast search</div>
+            <div class="landing-highlight__sub">Find transactions with filters and sorting.</div>
+          </div>
+        </div>
+        <div class="landing-highlight">
+          <div class="landing-highlight__icon"><i class="fa-solid fa-file-csv"></i></div>
+          <div>
+            <div class="landing-highlight__title">CSV export</div>
+            <div class="landing-highlight__sub">Download your records anytime.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="surface surface--pad home-band landing-section" id="features">
       <div class="header-row">
         <div>
-          <h1 class="h1"><i class="fa-solid fa-coins"></i> Budget Tracker</h1>
-          <p class="sub">Track spending, set budgets, and see your trends — fast.</p>
-        </div>
-        <div class="actions">
-          {% if session.get('loggedin') %}
-            <a class="btn btn-primary" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-arrow-right"></i> Go to Dashboard</a>
-          {% else %}
-            <a class="btn btn-primary" href="{{ url_for('login') }}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
-            <a class="btn btn-ghost" href="{{ url_for('register') }}"><i class="fa-solid fa-user-plus"></i> Create account</a>
-          {% endif %}
+          <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-wand-magic-sparkles"></i> Features</h2>
+          <p class="sub">Everything you need for day-to-day tracking.</p>
         </div>
       </div>
 
       <div class="grid-3 mt-18">
-        <div class="card home-feature">
+        <div class="card home-feature home-stripe--success">
           <div class="stat">
             <div>
               <div class="stat__label">Fast logging</div>
               <div class="sub">Add income/expense in seconds.</div>
             </div>
-            <span class="pill"><i class="fa-solid fa-bolt"></i></span>
+            <span class="pill pill--info"><i class="fa-solid fa-bolt"></i></span>
           </div>
         </div>
-        <div class="card home-feature">
+        <div class="card home-feature home-stripe--info">
           <div class="stat">
             <div>
               <div class="stat__label">Budgets that work</div>
               <div class="sub">Progress bars + overspend alerts.</div>
             </div>
-            <span class="pill"><i class="fa-solid fa-wallet"></i></span>
+            <span class="pill pill--warning"><i class="fa-solid fa-wallet"></i></span>
           </div>
         </div>
-        <div class="card home-feature">
+        <div class="card home-feature home-stripe--violet">
           <div class="stat">
             <div>
               <div class="stat__label">Clean analytics</div>
               <div class="sub">Charts + insights, no clutter.</div>
             </div>
-            <span class="pill"><i class="fa-solid fa-chart-line"></i></span>
+            <span class="pill pill--brand"><i class="fa-solid fa-chart-line"></i></span>
           </div>
         </div>
       </div>
-
     </section>
 
-    <section class="surface surface--pad home-band">
+    <section class="surface surface--pad home-band landing-section" id="how-it-works">
       <div class="header-row">
         <div>
           <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-compass"></i> How it works</h2>
@@ -68,32 +144,128 @@
       </div>
 
       <div class="grid-3 mt-18">
-        <div class="card home-step">
+        <div class="card home-step home-stripe--info">
           <div class="stat">
             <div>
               <div class="stat__label">1) Log</div>
               <div class="sub">Record income and expenses with categories.</div>
             </div>
-            <span class="pill"><i class="fa-solid fa-pen"></i></span>
+            <span class="pill pill--info"><i class="fa-solid fa-pen"></i></span>
           </div>
         </div>
-        <div class="card home-step">
+        <div class="card home-step home-stripe--warning">
           <div class="stat">
             <div>
               <div class="stat__label">2) Budget</div>
               <div class="sub">Set monthly limits and watch spending progress.</div>
             </div>
-            <span class="pill"><i class="fa-solid fa-layer-group"></i></span>
+            <span class="pill pill--warning"><i class="fa-solid fa-layer-group"></i></span>
           </div>
         </div>
-        <div class="card home-step">
+        <div class="card home-step home-stripe--brand">
           <div class="stat">
             <div>
               <div class="stat__label">3) Improve</div>
               <div class="sub">Use insights to adjust habits and hit goals.</div>
             </div>
-            <span class="pill"><i class="fa-solid fa-chart-line"></i></span>
+            <span class="pill pill--brand"><i class="fa-solid fa-chart-line"></i></span>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="surface surface--pad home-band landing-section" id="security">
+      <div class="header-row">
+        <div>
+          <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-lock"></i> Security</h2>
+          <p class="sub">Simple, practical safety defaults.</p>
+        </div>
+      </div>
+
+      <div class="grid-2 mt-18">
+        <div class="card">
+          <div class="stat">
+            <div>
+              <div class="stat__label">Session-based access</div>
+              <div class="sub">Most pages require login, and your data is scoped per account.</div>
+            </div>
+            <span class="pill pill--brand"><i class="fa-solid fa-user-shield"></i></span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="stat">
+            <div>
+              <div class="stat__label">Run it where you trust</div>
+              <div class="sub">Host it locally or on your own server, and set a strong secret key in <span style="font-weight: 900;">.env</span>.</div>
+            </div>
+            <span class="pill pill--info"><i class="fa-solid fa-server"></i></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="surface surface--pad home-band landing-section" id="faq">
+      <div class="header-row">
+        <div>
+          <h2 class="h1" style="font-size: 1.2rem; margin: 0;"><i class="fa-solid fa-circle-question"></i> FAQ</h2>
+          <p class="sub">Quick answers.</p>
+        </div>
+      </div>
+
+      <div class="grid-2 mt-18">
+        <div class="card">
+          <div class="stat">
+            <div>
+              <div class="stat__label">Can I export my data?</div>
+              <div class="sub">Yes — export filtered transactions as CSV from the Transactions page.</div>
+            </div>
+            <span class="pill pill--success"><i class="fa-solid fa-file-csv"></i></span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="stat">
+            <div>
+              <div class="stat__label">Does it support budgets?</div>
+              <div class="sub">Yes — set monthly budgets per expense category and track progress.</div>
+            </div>
+            <span class="pill pill--warning"><i class="fa-solid fa-wallet"></i></span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="stat">
+            <div>
+              <div class="stat__label">Can I use it daily?</div>
+              <div class="sub">Yes — quick add, recent transactions, and simple categories keep it fast.</div>
+            </div>
+            <span class="pill pill--info"><i class="fa-solid fa-bolt"></i></span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="stat">
+            <div>
+              <div class="stat__label">Does it show trends?</div>
+              <div class="sub">Yes — analytics include monthly income/expense and category breakdown.</div>
+            </div>
+            <span class="pill pill--brand"><i class="fa-solid fa-chart-line"></i></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="surface surface--pad surface--accent surface--accent-home landing-cta" aria-label="Get started">
+      <div class="landing-cta__grid">
+        <div>
+          <h2 class="landing-cta__title">Ready to take control of your spending?</h2>
+          <p class="landing-cta__sub">Create an account, set budgets, and start tracking in minutes.</p>
+        </div>
+        <div class="actions landing-cta__actions">
+          {% if session.get('loggedin') %}
+            <a class="btn btn-primary" href="{{ url_for('dashboard') }}"><i class="fa-solid fa-arrow-right"></i> Open dashboard</a>
+            <a class="btn btn-ghost" href="{{ url_for('transactions') }}"><i class="fa-solid fa-plus"></i> Add transaction</a>
+          {% else %}
+            <a class="btn btn-primary" href="{{ url_for('register') }}"><i class="fa-solid fa-user-plus"></i> Create free account</a>
+            <a class="btn btn-ghost" href="{{ url_for('login') }}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+          {% endif %}
         </div>
       </div>
     </section>

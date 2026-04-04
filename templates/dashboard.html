@@ -111,7 +111,7 @@
       {% if budget_progress %}
         <div class="mt-12" style="display: grid; gap: 12px;">
           {% for b in budget_progress %}
-            <div class="card dash-budget-item {% if b.overspent %}is-danger{% endif %}">
+            <div class="card card-stripe card-stripe--warning dash-budget-item {% if b.overspent %}is-danger{% endif %}">
               <div class="header-row">
                 <div>
                   <div class="stat__label">{{ b.category }}</div>
@@ -127,7 +127,7 @@
           {% endfor %}
         </div>
       {% else %}
-        <div class="card">
+        <div class="card card-stripe card-stripe--warning">
           <div class="stat">
             <div>
               <div class="stat__label">No budgets set for {{ month_name }}</div>
@@ -149,7 +149,7 @@
       </div>
 
       {% if transactions %}
-        <div class="table-wrap mt-12">
+        <div class="table-wrap mt-12 card-stripe card-stripe--accent">
           <table class="table">
             <thead>
               <tr>
@@ -181,7 +181,7 @@
           </table>
         </div>
       {% else %}
-        <div class="card">
+        <div class="card card-stripe card-stripe--accent">
           <div class="stat">
             <div>
               <div class="stat__label">No transactions yet</div>

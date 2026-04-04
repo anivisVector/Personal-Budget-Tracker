@@ -44,15 +44,30 @@
       {% endif %}
     {% else %}
       <div class="navlinks">
-        <a class="navlink {% if request.endpoint == 'home' %}is-active{% endif %}" href="{{ url_for('home') }}">
-          <i class="fa-solid fa-house"></i> <span class="navtext">Home</span>
-        </a>
-        <a class="navlink {% if request.endpoint == 'login' %}is-active{% endif %}" href="{{ url_for('login') }}">
-          <i class="fa-solid fa-right-to-bracket"></i> <span class="navtext">Login</span>
-        </a>
-        <a class="navlink {% if request.endpoint == 'register' %}is-active{% endif %}" href="{{ url_for('register') }}">
-          <i class="fa-solid fa-user-plus"></i> <span class="navtext">Register</span>
-        </a>
+        {% if request.endpoint == 'home' %}
+          <a class="navlink" href="{{ url_for('home') }}#features">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <span class="navtext">Features</span>
+          </a>
+          <a class="navlink" href="{{ url_for('home') }}#how-it-works">
+            <i class="fa-solid fa-compass"></i> <span class="navtext">How it works</span>
+          </a>
+          <a class="navlink" href="{{ url_for('home') }}#security">
+            <i class="fa-solid fa-lock"></i> <span class="navtext">Security</span>
+          </a>
+          <a class="navlink" href="{{ url_for('home') }}#faq">
+            <i class="fa-solid fa-circle-question"></i> <span class="navtext">FAQ</span>
+          </a>
+        {% else %}
+          <a class="navlink {% if request.endpoint == 'home' %}is-active{% endif %}" href="{{ url_for('home') }}">
+            <i class="fa-solid fa-house"></i> <span class="navtext">Home</span>
+          </a>
+          <a class="navlink {% if request.endpoint == 'login' %}is-active{% endif %}" href="{{ url_for('login') }}">
+            <i class="fa-solid fa-right-to-bracket"></i> <span class="navtext">Login</span>
+          </a>
+          <a class="navlink {% if request.endpoint == 'register' %}is-active{% endif %}" href="{{ url_for('register') }}">
+            <i class="fa-solid fa-user-plus"></i> <span class="navtext">Register</span>
+          </a>
+        {% endif %}
       </div>
     {% endif %}
 
@@ -60,6 +75,14 @@
       <button class="icon-btn" type="button" onclick="toggleTheme()" title="Toggle theme">
         <i class="fa-solid fa-circle-half-stroke"></i>
       </button>
+      {% if not session.get('loggedin') and request.endpoint == 'home' %}
+        <a class="btn btn-ghost btn-small" href="{{ url_for('login') }}">
+          <i class="fa-solid fa-right-to-bracket"></i> <span class="navtext">Login</span>
+        </a>
+        <a class="btn btn-primary btn-small" href="{{ url_for('register') }}">
+          <i class="fa-solid fa-user-plus"></i> <span class="navtext">Get started</span>
+        </a>
+      {% endif %}
       {% if session.get('loggedin') %}
         <span class="pill">Hi, {{ session.username }}</span>
         <a class="btn btn-ghost btn-small" href="{{ url_for('logout') }}">
