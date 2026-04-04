@@ -42,7 +42,7 @@
         <div class="stat">
           <div>
             <div class="stat__label dash-kpi__label">Total income</div>
-            <div class="stat__value dash-kpi__value">₹{{ '%.2f'|format(total_income) }}</div>
+            <div class="stat__value dash-kpi__value" data-countup="{{ total_income }}" data-prefix="₹" data-decimals="2">₹{{ '%.2f'|format(total_income) }}</div>
           </div>
           <span class="pill pill--income"><i class="fa-solid fa-arrow-trend-up"></i></span>
         </div>
@@ -51,7 +51,7 @@
         <div class="stat">
           <div>
             <div class="stat__label dash-kpi__label">Total balance</div>
-            <div class="stat__value dash-kpi__value">₹{{ '%.2f'|format(balance) }}</div>
+            <div class="stat__value dash-kpi__value" data-countup="{{ balance }}" data-prefix="₹" data-decimals="2">₹{{ '%.2f'|format(balance) }}</div>
           </div>
           <span class="pill pill--info"><i class="fa-solid fa-wallet"></i></span>
         </div>
@@ -60,7 +60,7 @@
         <div class="stat">
           <div>
             <div class="stat__label dash-kpi__label">Total expenses</div>
-            <div class="stat__value dash-kpi__value">₹{{ '%.2f'|format(total_expense) }}</div>
+            <div class="stat__value dash-kpi__value" data-countup="{{ total_expense }}" data-prefix="₹" data-decimals="2">₹{{ '%.2f'|format(total_expense) }}</div>
           </div>
           <span class="pill pill--expense"><i class="fa-solid fa-arrow-trend-down"></i></span>
         </div>
@@ -72,7 +72,7 @@
         <div class="stat">
           <div>
             <div class="stat__label dash-kpi__label">{{ month_name }} income</div>
-            <div class="stat__value dash-kpi__value">₹{{ '%.2f'|format(monthly_income) }}</div>
+            <div class="stat__value dash-kpi__value" data-countup="{{ monthly_income }}" data-prefix="₹" data-decimals="2">₹{{ '%.2f'|format(monthly_income) }}</div>
           </div>
           <span class="pill pill--income"><i class="fa-solid fa-calendar-plus"></i></span>
         </div>
@@ -81,7 +81,7 @@
         <div class="stat">
           <div>
             <div class="stat__label dash-kpi__label">{{ month_name }} net</div>
-            <div class="stat__value dash-kpi__value">₹{{ '%.2f'|format(monthly_net) }}</div>
+            <div class="stat__value dash-kpi__value" data-countup="{{ monthly_net }}" data-prefix="₹" data-decimals="2">₹{{ '%.2f'|format(monthly_net) }}</div>
           </div>
           <span class="pill pill--brand"><i class="fa-solid fa-chart-line"></i></span>
         </div>
@@ -90,7 +90,7 @@
         <div class="stat">
           <div>
             <div class="stat__label dash-kpi__label">{{ month_name }} expenses</div>
-            <div class="stat__value dash-kpi__value">₹{{ '%.2f'|format(monthly_expense) }}</div>
+            <div class="stat__value dash-kpi__value" data-countup="{{ monthly_expense }}" data-prefix="₹" data-decimals="2">₹{{ '%.2f'|format(monthly_expense) }}</div>
           </div>
           <span class="pill pill--expense"><i class="fa-solid fa-calendar-minus"></i></span>
         </div>

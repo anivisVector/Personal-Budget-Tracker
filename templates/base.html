@@ -31,14 +31,93 @@
 
   <script>
     (function () {
-      const saved = localStorage.getItem('theme') || 'dark';
-      document.body.classList.toggle('theme-light', saved === 'light');
+      try {
+        const saved = localStorage.getItem('theme') || 'dark';
+        document.body.classList.toggle('theme-light', saved === 'light');
+      } catch (e) {
+        // If storage is blocked, keep default theme.
+      }
     })();
 
     function toggleTheme() {
       const isLight = document.body.classList.toggle('theme-light');
-      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      try {
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      } catch (e) {
+        // Ignore if storage is blocked.
+      }
     }
+
+    window.addEventListener('DOMContentLoaded', function () {
+      const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const nodes = Array.from(document.querySelectorAll('[data-countup]'));
+      if (nodes.length === 0) return;
+
+      function formatValue(value, decimals) {
+        return Number(value).toLocaleString(undefined, {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        });
+      }
+
+      function runCountUp(el) {
+        if (el.dataset.counted === '1') return;
+        el.dataset.counted = '1';
+
+        const target = Number(el.getAttribute('data-countup'));
+        const prefix = el.getAttribute('data-prefix') || '';
+        const suffix = el.getAttribute('data-suffix') || '';
+        const decimals = Math.max(0, Math.min(6, parseInt(el.getAttribute('data-decimals') || '0', 10) || 0));
+
+        if (!Number.isFinite(target) || reduceMotion) {
+          el.textContent = `${prefix}${formatValue(Number.isFinite(target) ? target : 0, decimals)}${suffix}`;
+          return;
+        }
+
+        const durationMs = 1200;
+        const start = performance.now();
+
+        // Make the animation obvious immediately.
+        el.textContent = `${prefix}${formatValue(0, decimals)}${suffix}`;
+
+        function tick(now) {
+          const t = Math.min(1, (now - start) / durationMs);
+          const eased = 1 - Math.pow(1 - t, 3);
+          const current = target * eased;
+          el.textContent = `${prefix}${formatValue(current, decimals)}${suffix}`;
+          if (t < 1) requestAnimationFrame(tick);
+        }
+
+        requestAnimationFrame(tick);
+      }
+
+      function isInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        const vh = window.innerHeight || document.documentElement.clientHeight;
+        const vw = window.innerWidth || document.documentElement.clientWidth;
+        return rect.bottom > 0 && rect.right > 0 && rect.top < vh && rect.left < vw;
+      }
+
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            runCountUp(entry.target);
+            io.unobserve(entry.target);
+          }
+        }, { threshold: 0.25 });
+
+        nodes.forEach((el) => {
+          if (isInViewport(el)) {
+            runCountUp(el);
+          } else {
+            io.observe(el);
+          }
+        });
+      } else {
+        nodes.forEach(runCountUp);
+      }
+    });
   </script>
 
   {% block scripts %}{% endblock %}

@@ -519,7 +519,21 @@ body.theme-light .input::placeholder { color: rgba(11, 18, 32, 0.48); }
   text-decoration: none;
 }
 
-.btn:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.20); }
+.btn:hover { transform: translateY(-1px) scale(1.02); filter: brightness(1.05); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.20); }
+
+@keyframes floatSoft {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -8px, 0); }
+}
+
+/* Overview preview card on the landing page */
+.landing .landing-mock {
+  animation: floatSoft 3.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing .landing-mock { animation: none; }
+}
 
 .btn-primary {
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
