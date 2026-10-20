@@ -72,7 +72,7 @@
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
   <button class="btn btn-danger-ghost btn-sm{{ ' btn-icon' if icon_only }}" type="submit" {% if icon_only %}aria-label="{{ label }}" title="{{ label }}"{% endif %}>
-    <i class="fa-solid fa-trash-can" aria-hidden="true"></i>{% if not icon_only %} {{ label }}{% endif %}
+    <i class="fa-solid fa-trash-can" aria-hidden="true"></i>{% if not icon_only %} <span class="btn-text">{{ label }}</span>{% endif %}
   </button>
 </form>
 {%- endmacro %}

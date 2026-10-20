@@ -16,13 +16,14 @@
 </div>
 
 <section class="card" data-reveal aria-label="Transaction list">
-  <form class="filters" method="get" action="{{ url_for('transactions.index') }}" role="search">
+  {% set more_active = filters.type or filters.category or filters.date_from or filters.date_to or filters.sort != 'date_desc' %}
+  <form class="filters{{ ' is-open' if more_active }}" id="txn-filters" method="get" action="{{ url_for('transactions.index') }}" role="search">
     <div class="form-grid">
       <div class="field field-search">
         <label class="label" for="q">Search</label>
         <div class="input-prefix"><span><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></span><input class="input" id="q" name="q" value="{{ filters.q }}" placeholder="Title, note or category"></div>
       </div>
-      <div class="field">
+      <div class="field filter-more">
         <label class="label" for="type">Type</label>
         <select class="select" id="type" name="type">
           <option value="">All</option>
@@ -30,22 +31,22 @@
           <option value="income" {{ 'selected' if filters.type == 'income' }}>Income</option>
         </select>
       </div>
-      <div class="field">
+      <div class="field filter-more">
         <label class="label" for="category">Category</label>
         <select class="select" id="category" name="category">
           <option value="">All</option>
           {% for c in categories %}<option value="{{ c.name }}" {{ 'selected' if filters.category|lower == c.name|lower }}>{{ c.name }}</option>{% endfor %}
         </select>
       </div>
-      <div class="field">
+      <div class="field filter-more">
         <label class="label" for="date_from">From</label>
         <input class="input" id="date_from" name="date_from" type="date" value="{{ filters.date_from }}">
       </div>
-      <div class="field">
+      <div class="field filter-more">
         <label class="label" for="date_to">To</label>
         <input class="input" id="date_to" name="date_to" type="date" value="{{ filters.date_to }}">
       </div>
-      <div class="field">
+      <div class="field filter-more">
         <label class="label" for="sort">Sort</label>
         <select class="select" id="sort" name="sort">
           <option value="date_desc" {{ 'selected' if filters.sort == 'date_desc' }}>Newest</option>
@@ -57,6 +58,7 @@
     </div>
     <div class="row" style="margin-top: 12px">
       <button class="btn btn-primary btn-sm" type="submit"><i class="fa-solid fa-filter" aria-hidden="true"></i> Apply</button>
+      <button class="btn btn-ghost btn-sm filters-toggle" type="button" aria-controls="txn-filters" aria-expanded="{{ 'true' if more_active else 'false' }}" data-filters-toggle><i class="fa-solid fa-sliders" aria-hidden="true"></i> More filters</button>
       {% if filters.active or filters.sort != 'date_desc' %}<a class="btn btn-ghost btn-sm" href="{{ url_for('transactions.index') }}">Clear filters</a>{% endif %}
     </div>
   </form>
@@ -99,7 +101,7 @@
               <td data-cell="amount" class="right">{{ m.money(t.amount, t.type) }}</td>
               <td data-cell="actions">
                 <div class="row-actions">
-                  <a class="btn btn-ghost btn-sm" href="{{ url_for('transactions.edit', txn_id=t.id, next=request.full_path) }}"><i class="fa-solid fa-pen" aria-hidden="true"></i> Edit</a>
+                  <a class="btn btn-ghost btn-sm" href="{{ url_for('transactions.edit', txn_id=t.id, next=request.full_path) }}"><i class="fa-solid fa-pen" aria-hidden="true"></i> <span class="btn-text">Edit</span></a>
                   {{ m.delete_button(url_for('transactions.delete', txn_id=t.id), 'Delete "' ~ (t.title or t.category) ~ '" from ' ~ (t.date|nice_date) ~ '? This can\'t be undone.', next=request.full_path) }}
                 </div>
               </td>
