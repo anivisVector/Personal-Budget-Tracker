@@ -141,7 +141,7 @@ def export_csv():
         f'SELECT date, type, amount, category, title, description FROM transactions WHERE {where} ORDER BY {filters.order_by}',
         params,
     )
-    filename = f'transactions-{datetime.now().strftime("%Y%m%d-%H%M%S")}.csv'
+    filename = f'lekha-transactions-{datetime.now().strftime("%Y%m%d-%H%M%S")}.csv'
     return Response(
         export_rows(rows),
         mimetype='text/csv',

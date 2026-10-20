@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ledgerly is a server-rendered Flask application with a small JSON API for interactive features. Every request is handled by one WSGI app (`app.py` → `budget_app.create_app()`), which Vercel runs as a single Python function. Static assets are served separately by Vercel's CDN from `public/`.
+Lekha is a server-rendered Flask application with a small JSON API for interactive features. Every request is handled by one WSGI app (`app.py` → `budget_app.create_app()`), which Vercel runs as a single Python function. Static assets are served separately by Vercel's CDN from `public/`.
 
 ```
 Browser ── HTML forms ────────────┐

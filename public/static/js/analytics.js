@@ -5,7 +5,7 @@
   const dataEl = document.getElementById('analytics-data');
   if (!dataEl || !window.Chart) return;
   const series = JSON.parse(dataEl.textContent);
-  const { formatINR } = window.Ledgerly;
+  const { formatINR } = window.Lekha;
   const charts = [];
 
   const token = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();

@@ -6,7 +6,7 @@
   const panel = document.getElementById('assistant');
   const fab = document.getElementById('assistant-fab');
   if (!panel || !fab) return;
-  const { api } = window.Ledgerly;
+  const { api } = window.Lekha;
 
   const log = document.getElementById('assistant-log');
   const form = document.getElementById('assistant-form');

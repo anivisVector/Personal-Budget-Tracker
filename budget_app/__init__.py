@@ -1,4 +1,4 @@
-"""Ledgerly: a personal budget tracker (Flask app factory)."""
+"""Lekha: a personal budget tracker (Flask app factory)."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from .security import apply_security_headers, csp_nonce, same_site_referrer, wan
 csrf = CSRFProtect()
 log = logging.getLogger('budget_app')
 
-APP_NAME = 'Ledgerly'
+APP_NAME = 'Lekha'  # लेखा: Hindi for "account"
 
 
 def _configure_logging(app: Flask) -> None:

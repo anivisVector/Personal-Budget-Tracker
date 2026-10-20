@@ -1,4 +1,4 @@
-# Deploying Ledgerly (Vercel + Supabase)
+# Deploying Lekha (Vercel + Supabase)
 
 Vercel runs the Flask app as a Python function, and Supabase provides the Postgres database. Both have free tiers that are enough for a personal project.
 
@@ -71,7 +71,7 @@ GitHub Actions (`.github/workflows/ci.yml`) runs lint and the test suite (SQLite
 
 Preview deployments run your branch's code. If they share the production `DATABASE_URL`, a branch that adds a migration would migrate production before you merge it. Recommended setup:
 
-- Create a second free Supabase project (for example `ledgerly-preview`) and set its pooler URL as `DATABASE_URL` for the **Preview** environment only.
+- Create a second free Supabase project (for example `lekha-preview`) and set its pooler URL as `DATABASE_URL` for the **Preview** environment only.
 - Or give Preview no `DATABASE_URL` at all. The app will then refuse to start there, which is safe but means previews can't be clicked through.
 
 Migrations in this project are additive (new tables, new nullable columns, new indexes), so older deployments keep working against a newer schema.
