@@ -124,7 +124,7 @@
       <a class="btn btn-sm" href="{{ url_for('transactions.index') }}">Clear filters</a>
     {% endcall %}
   {% else %}
-    {% call m.empty_state('fa-receipt', 'Your ledger is empty', 'Add your first transaction, or bring your history in with a CSV import.') %}
+    {% call m.empty_state('fa-receipt', 'No transactions yet', 'Add your first transaction, or bring your history in with a CSV import.') %}
       <a class="btn btn-primary btn-sm" href="{{ url_for('transactions.new') }}">Add transaction</a>
       <a class="btn btn-sm" href="{{ url_for('transactions.import_view') }}">Import CSV</a>
     {% endcall %}

@@ -36,7 +36,7 @@ Browser ── HTML forms ────────────┐
 |---|---|---|
 | `users` | accounts | `password` is a Werkzeug scrypt hash; `is_demo`, `created_at` |
 | `categories` | shared defaults (`user_id IS NULL`) + per-user custom | type `income`/`expense` |
-| `transactions` | ledger entries | `amount` NUMERIC (14,2 on Postgres), `date` ISO `YYYY-MM-DD`, `category` stored by name (legacy design) |
+| `transactions` | income and expense entries | `amount` NUMERIC (14,2 on Postgres), `date` ISO `YYYY-MM-DD`, `category` stored by name (legacy design) |
 | `budgets` | monthly limit per category | unique `(user_id, category_id, month, year)` → safe upserts |
 | `rate_events` | login failures, demo creation, AI calls | database-backed so limits hold across serverless instances |
 | `ai_cache` | last generated insights per user | keyed by a hash of the aggregate data |
