@@ -1,6 +1,7 @@
 import pytest
 
 from budget_app.config import ConfigError, load_settings
+from budget_app.db import libpq_url
 from tests.conftest import csrf_from, register
 
 
@@ -53,8 +54,22 @@ def test_production_requires_secret_key(monkeypatch):
 def test_vercel_requires_database_url(monkeypatch):
     monkeypatch.setenv('VERCEL', '1')
     monkeypatch.delenv('DATABASE_URL', raising=False)
+    monkeypatch.delenv('POSTGRES_URL', raising=False)
     with pytest.raises(ConfigError, match='DATABASE_URL'):
         load_settings({'secret_key': 'x'})
+
+
+def test_vercel_accepts_postgres_url(monkeypatch):
+    monkeypatch.setenv('VERCEL', '1')
+    monkeypatch.delenv('DATABASE_URL', raising=False)
+    monkeypatch.setenv('POSTGRES_URL', 'postgres://u:p@db.example.com:6543/postgres')
+    assert load_settings({'secret_key': 'x'}).database_url == 'postgres://u:p@db.example.com:6543/postgres'
+
+
+def test_libpq_url_drops_unknown_parameters():
+    url = 'postgres://u:p@h:6543/postgres?sslmode=require&supa=base-pooler.x&options=-c%20search_path%3Dpublic'
+    assert libpq_url(url) == 'postgres://u:p@h:6543/postgres?sslmode=require&options=-c%20search_path%3Dpublic'
+    assert libpq_url('postgres://u:p@h/db') == 'postgres://u:p@h/db'
 
 
 def test_healthz(client):

@@ -31,6 +31,8 @@ Vercel runs the Flask app as a Python function, and Supabase provides the Postgr
 
 You don't need to create any tables; the app's migrations do that.
 
+**Shortcut: Vercel's Supabase integration.** Instead of steps 1–3, you can create the database from Vercel (**Project → Storage → Create Database → Supabase**, or `vercel integration add supabase`). It sets `POSTGRES_URL` (the transaction pooler) on the project automatically. The app uses `POSTGRES_URL` when `DATABASE_URL` is not set, and strips the integration's extra `supa=` parameter, which the Postgres driver would otherwise reject.
+
 ## 2. Import the project into Vercel
 
 1. Push this repository to GitHub (private or public both work).

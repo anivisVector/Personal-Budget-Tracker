@@ -17,6 +17,7 @@ from collections.abc import Iterable
 from decimal import Decimal
 from functools import lru_cache
 from typing import Any
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 from flask import current_app, g
 
@@ -114,13 +115,29 @@ def integrity_errors() -> tuple[type[BaseException], ...]:
     return tuple(errors)
 
 
+def libpq_url(database_url: str) -> str:
+    """Drop query parameters libpq doesn't understand.
+
+    Marketplace integrations append their own markers (Supabase adds `supa=...`,
+    Prisma-style URLs add `pgbouncer=true`), and libpq rejects unknown parameters.
+    """
+    parts = urlsplit(database_url)
+    if not parts.query:
+        return database_url
+    from psycopg import pq
+
+    known = {option.keyword.decode() for option in pq.Conninfo.get_defaults()}
+    query = [(key, value) for key, value in parse_qsl(parts.query, keep_blank_values=True) if key in known]
+    return urlunsplit(parts._replace(query=urlencode(query, quote_via=quote)))
+
+
 def connect(database_url: str | None, sqlite_path: str) -> Database:
     if database_url:
         import psycopg
         from psycopg.rows import dict_row
 
         conn = psycopg.connect(
-            database_url,
+            libpq_url(database_url),
             row_factory=dict_row,
             connect_timeout=10,
             # Pooled endpoints (PgBouncer in transaction mode, e.g. Neon's default URL)

@@ -73,11 +73,12 @@ def load_settings(overrides: dict | None = None) -> Settings:
         # Development only: a random key per process. Sessions reset on restart, which is fine locally.
         secret_key = secrets.token_hex(32)
 
-    database_url = overrides.get('database_url', os.getenv('DATABASE_URL') or None)
+    # POSTGRES_URL is what Vercel's Supabase integration provides (its transaction pooler).
+    database_url = overrides.get('database_url', os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL') or None)
     if on_vercel and not database_url:
         raise ConfigError(
             'DATABASE_URL is required on Vercel: the serverless filesystem is ephemeral, so SQLite data would be lost. '
-            'Connect a Postgres database (e.g. Neon from the Vercel Marketplace) to this project.'
+            'Connect a Postgres database (e.g. Supabase from the Vercel Marketplace) to this project.'
         )
 
     api_key = overrides.get('gemini_api_key', os.getenv('GEMINI_API_KEY') or None)

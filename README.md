@@ -104,7 +104,7 @@ With no `DATABASE_URL`, the app uses a local SQLite file and creates or migrates
 | Variable | Required | Purpose |
 |---|---|---|
 | `SECRET_KEY` | Production | Signs session cookies. Generate with `python -c "import secrets; print(secrets.token_hex(32))"`. The app refuses to start in production without it. |
-| `DATABASE_URL` | Production | Postgres URL. On Supabase use the **Transaction pooler** string (port 6543). The app refuses to start on Vercel without it. |
+| `DATABASE_URL` | Production | Postgres URL. On Supabase use the **Transaction pooler** string (port 6543). Falls back to `POSTGRES_URL`, which Vercel's Supabase integration sets. The app refuses to start on Vercel without one. |
 | `GEMINI_API_KEY` | No | Enables Gemini features. Without it, everything runs on built-in rules. |
 | `GEMINI_MODEL` | No | Default `gemini-3.5-flash-lite`. |
 | `AI_DAILY_LIMIT` | No | Gemini calls per user per day (default 40). |
