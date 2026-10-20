@@ -1,0 +1,72 @@
+{% extends 'layouts/app.html' %}
+{% import '_macros.html' as m with context %}
+{% block title %}Import transactions{% endblock %}
+
+{% block content %}
+<div class="page-header reveal">
+  <div>
+    <h1>Import from CSV</h1>
+    <p>Bring in history from a spreadsheet, a bank export you've tidied, or another {{ app_name }} account.</p>
+  </div>
+  <div class="actions"><a class="btn btn-ghost" href="{{ url_for('transactions.index') }}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to transactions</a></div>
+</div>
+
+{% if result %}
+  <section class="card card-accent" data-reveal style="margin-bottom: 20px" aria-labelledby="result-title">
+    <div class="card-header"><h2 id="result-title"><span class="title-icon tone-teal" aria-hidden="true"><i class="fa-solid fa-clipboard-check"></i></span> Import finished</h2></div>
+    <div class="card-body">
+      <div class="kpis kpis-3" data-reveal-group style="margin-bottom: 16px">
+        <div class="card kpi" data-reveal><div class="kpi-label">Imported</div><div class="kpi-value">{{ result.imported }}</div></div>
+        <div class="card kpi" data-reveal><div class="kpi-label">Skipped as duplicates</div><div class="kpi-value">{{ result.duplicates }}</div></div>
+        <div class="card kpi" data-reveal><div class="kpi-label">Rows with problems</div><div class="kpi-value">{{ result.total_errors }}</div></div>
+      </div>
+      {% if result.created_categories %}
+        <p class="text-2" style="margin-bottom: 12px"><i class="fa-solid fa-tags" aria-hidden="true"></i> New categories created: {{ result.created_categories|join(', ') }}</p>
+      {% endif %}
+      {% if result.errors %}
+        <details class="disclosure" open>
+          <summary><i class="fa-solid fa-chevron-right" aria-hidden="true"></i> Rows that were not imported</summary>
+          <div class="table-wrap" style="margin-top: 10px">
+            <table class="table"><thead><tr><th scope="col">Row</th><th scope="col">Problem</th></tr></thead>
+              <tbody>{% for line, message in result.errors[:200] %}<tr><td class="num">{{ line }}</td><td>{{ message }}</td></tr>{% endfor %}</tbody>
+            </table>
+          </div>
+        </details>
+      {% endif %}
+      <div class="row" style="margin-top: 16px"><a class="btn btn-primary" href="{{ url_for('transactions.index') }}">View transactions</a></div>
+    </div>
+  </section>
+{% endif %}
+
+<div class="grid grid-1-1" data-reveal-group>
+  <section class="card" data-reveal aria-labelledby="upload-title">
+    <div class="card-header"><div><h2 id="upload-title"><span class="title-icon tone-indigo" aria-hidden="true"><i class="fa-solid fa-file-arrow-up"></i></span> Upload a file</h2><p>UTF-8 CSV, up to 1 MB and {{ '{:,}'.format(max_rows) }} rows.</p></div></div>
+    <form class="card-body stack" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% if error %}<div class="alert alert-danger" role="alert"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i><div>{{ error }}</div></div>{% endif %}
+      <div class="field">
+        <label class="label" for="file">CSV file</label>
+        <input class="input" id="file" name="file" type="file" accept=".csv,text/csv" required>
+      </div>
+      <label class="check"><input type="checkbox" name="create_missing" value="1" checked> <span>Create categories that don't exist yet</span></label>
+      <div><button class="btn btn-primary" type="submit"><i class="fa-solid fa-upload" aria-hidden="true"></i> Import</button></div>
+    </form>
+  </section>
+
+  <section class="card" data-reveal aria-labelledby="format-title">
+    <div class="card-header"><h2 id="format-title"><span class="title-icon tone-amber" aria-hidden="true"><i class="fa-solid fa-table"></i></span> Expected format</h2></div>
+    <div class="card-body stack">
+      <p class="text-2">The first row must be a header. <code>date</code>, <code>type</code>, <code>amount</code> and <code>category</code> are required; <code>title</code> and <code>description</code> are optional. This matches the Export file, so exports round-trip.</p>
+      <pre style="margin: 0; padding: 12px; border-radius: 10px; background: var(--surface-2); overflow-x: auto; font-size: 0.82rem">date,type,amount,category,title,description
+2026-10-01,income,68000,Salary,Monthly salary,
+2026-10-03,expense,18000,Rent,Flat rent,October
+2026-10-05,expense,450.50,Groceries,BigBasket,</pre>
+      <ul class="text-2" style="margin: 0; padding-left: 18px; font-size: 0.9rem">
+        <li>Dates use <code>YYYY-MM-DD</code>; amounts are positive numbers.</li>
+        <li>Rows already in your ledger (same date, type, amount and title) are skipped, so re-importing a file is safe.</li>
+        <li>Every row is validated; problems are listed by row number.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+{% endblock %}

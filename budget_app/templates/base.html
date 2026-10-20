@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %} · {{ app_name }}</title>
+  <meta name="description" content="{% block description %}{{ app_name }} is a personal budget tracker with natural-language entry, budget pace alerts, clear analytics and a voice assistant.{% endblock %}">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <meta name="theme-color" content="#f5f3ec" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#06100c" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.svg', v=asset_version) }}" type="image/svg+xml">
+  <script nonce="{{ csp_nonce() }}">
+    (function () {
+      var root = document.documentElement;
+      root.classList.add('js');
+      try {
+        // No stored choice = follow the operating system's light/dark setting.
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') root.setAttribute('data-theme', t);
+        var p = localStorage.getItem('palette');
+        if ({{ palettes|map('first')|list|tojson }}.indexOf(p) > -1) root.setAttribute('data-palette', p);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha384-nRgPTkuX86pH8yjPJUAFuASXQSSl2/bBUiNV47vSYpKFxHJhbcrGnmlYpYJMeD7a" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css', v=asset_version) }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <div class="page-progress" aria-hidden="true"></div>
+  {% block body %}{% endblock %}
+  <dialog class="dialog" id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+    <form method="dialog">
+      <div class="dialog-body">
+        <div class="icon-circle"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></div>
+        <div>
+          <h2 id="confirm-title">Are you sure?</h2>
+          <p id="confirm-text"></p>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" value="cancel">Cancel</button>
+        <button class="btn btn-danger" value="confirm" id="confirm-ok">Delete</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="{{ url_for('static', filename='js/app.js', v=asset_version) }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

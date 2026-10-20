@@ -1,0 +1,199 @@
+{% extends 'layouts/public.html' %}
+{% block title %}Every rupee, accounted for{% endblock %}
+
+{% macro demo_button(classes='btn btn-aurora', label='Explore the live demo') -%}
+  {% if demo_enabled %}
+    <form class="inline" method="post" action="{{ url_for('auth.demo') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="{{ classes }}" type="submit" data-magnetic>{{ label }} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+    </form>
+  {% endif %}
+{%- endmacro %}
+
+{% block content %}
+{% set nl_examples = [
+  {'text': 'spent 2.5k on dinner last Friday', 'chips': ['₹2,500.00', 'Expense', 'Food', 'Last Friday']},
+  {'text': 'got my salary 68000 today', 'chips': ['₹68,000.00', 'Income', 'Salary', 'Today']},
+  {'text': 'paid 1200 for electricity yesterday', 'chips': ['₹1,200.00', 'Expense', 'Bills', 'Yesterday']},
+  {'text': 'uber to office 340', 'chips': ['₹340.00', 'Expense', 'Transport', 'Today']},
+] %}
+<section class="hero">
+  <div>
+    <p class="kicker reveal"><span class="dot" aria-hidden="true"></span> Personal finance, privately kept</p>
+    <h1 class="display reveal-2">Every rupee,<br><em>accounted for.</em></h1>
+    <p class="lede reveal-3">{{ app_name }} turns everyday spending into a calm, clear picture. Write it the way you'd say it, see each budget's pace before the month runs out, and ask about your money in plain words.</p>
+    <div class="cta reveal-3">
+      {{ demo_button() }}
+      <a class="btn btn-lg btn-glass" href="{{ url_for('auth.register') }}" data-magnetic>Create your account</a>
+    </div>
+    <dl class="hero-facts reveal-4">
+      <div><dt>₹</dt><dd>Rupee-native</dd></div>
+      <div><dt>0</dt><dd>Bank logins needed</dd></div>
+      <div><dt>1&#8209;click</dt><dd>Export or delete</dd></div>
+    </dl>
+  </div>
+
+  <div class="hero-visual reveal-3" data-tilt-scope>
+    <div class="glass-panel voice-panel parallax" data-depth="18" aria-hidden="true">
+      <span class="wave"><i></i><i></i><i></i><i></i><i></i></span>
+      <span data-rotate='{{ ["“Paid 450 for groceries”", "“What’s my balance?”", "“Set food budget to 6000”", "“Open analytics”"]|tojson }}'>“Paid 450 for groceries”</span>
+    </div>
+    <div class="balance-card" data-tilt aria-hidden="true">
+      <div class="top"><span class="label">Total balance</span><span class="chip"></span></div>
+      <div class="value" data-countup="184250" data-decimals="2">₹1,84,250.00</div>
+      <div class="month-progress">
+        <div class="mp-labels"><span>Day 20 of 31</span><span>11 days left in October</span></div>
+        <div class="mp-track"><span style="width: 65%"></span></div>
+      </div>
+      <div class="meta">
+        <div>October net<strong>+₹36,750</strong></div>
+        <div>Savings rate<strong>54%</strong></div>
+        <span class="spacer"></span>
+        <span class="brandline">{{ app_name }}</span>
+      </div>
+    </div>
+    <div class="glass-panel insight-panel parallax" data-depth="26" aria-hidden="true">
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      <p><strong>Spending is 18% lower</strong> than last month. Rent is half of it.</p>
+    </div>
+    <div class="glass-panel pace-panel parallax" data-depth="34" aria-hidden="true">
+      <div class="kicker">Budget pace</div>
+      <div class="pace-row"><span>Food</span><b>₹5,200 / 6,000</b><div class="meter is-at_risk"><span style="width: 87%"></span></div></div>
+      <div class="pace-row"><span>Groceries</span><b>₹4,550 / 8,000</b><div class="meter"><span style="width: 57%"></span></div></div>
+      <div class="pace-row"><span>Transport</span><b>₹1,480 / 3,500</b><div class="meter"><span style="width: 42%"></span></div></div>
+    </div>
+    <p class="sample-note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Product preview with sample data</p>
+  </div>
+</section>
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    {% for _ in range(2) %}
+      <span>Natural-language entry</span><span>Budget pace projections</span><span>Voice &amp; chat assistant</span>
+      <span>Explainable health score</span><span>CSV import &amp; export</span><span>Light &amp; dark themes</span>
+      <span>Salted, hashed passwords</span><span>Works without AI</span>
+    {% endfor %}
+  </div>
+</div>
+
+<section class="section" id="features">
+  <header class="section-head" data-reveal>
+    <p class="kicker"><span class="dot" aria-hidden="true"></span> Capabilities</p>
+    <h2>Built for the five&#8209;second <em>check-in.</em></h2>
+    <p>Log it, glance at your pace, move on. Everything you need, nothing that gets in the way.</p>
+  </header>
+
+  <div class="bento" data-reveal-group>
+    <article class="tile tile-wide" data-reveal>
+      <p class="kicker">Quick add</p>
+      <h3>Type it the way you'd say it.</h3>
+      <p>A sentence becomes a categorized, dated entry. You review it before anything is saved, with or without AI.</p>
+      <div class="demo" aria-hidden="true">
+        <div class="demo-input" data-typewriter="#demo-chips" data-examples='{{ nl_examples|tojson }}'>
+          <i class="fa-solid fa-wand-magic-sparkles"></i><span data-typed>{{ nl_examples[0].text }}</span><span class="caret"></span>
+        </div>
+        <div class="demo-chips" id="demo-chips">{% for c in nl_examples[0].chips %}<span>{{ c }}</span>{% endfor %}</div>
+      </div>
+    </article>
+
+    <article class="tile" data-reveal>
+      <p class="kicker">Budgets</p>
+      <h3>See the overspend coming.</h3>
+      <p>Each budget projects to month end and flags categories on pace to go over.</p>
+      <div class="demo" aria-hidden="true">
+        <div class="pace-row"><span class="muted">Shopping</span><b class="num">₹2,450 / 3,000</b><div class="meter is-at_risk"><span style="width: 82%"></span><i class="pace" style="left: 64%"></i></div></div>
+      </div>
+    </article>
+
+    <article class="tile" data-reveal>
+      <p class="kicker">Health score</p>
+      <h3>One number, fully explained.</h3>
+      <p>Savings rate, budget adherence and cash cushion, with every point shown.</p>
+      <div class="demo demo-score" aria-hidden="true">
+        <div class="score-ring" style="--value: 86" data-score="86"><span>86</span></div>
+        <span class="muted" style="font-size: .82rem">Savings 50/50<br>Budgets 21/30<br>Cushion 15/20</span>
+      </div>
+    </article>
+
+    <article class="tile" data-reveal>
+      <p class="kicker">Assistant</p>
+      <h3>Ask. It answers with your numbers.</h3>
+      <p>Voice or chat. Replies come from your data, never from guesses.</p>
+      <div class="demo demo-bubbles" aria-hidden="true">
+        <div class="bubble user">What's my balance?</div>
+        <div class="bubble bot">₹1,84,250. You've spent ₹31,250 so far this month.</div>
+      </div>
+    </article>
+
+    <article class="tile" data-reveal>
+      <p class="kicker">Import</p>
+      <h3>Bring your history with you.</h3>
+      <p>CSV import checks every row and skips duplicates, so re-importing is always safe.</p>
+      <div class="demo demo-import" aria-hidden="true">
+        <div><i class="fa-solid fa-check"></i><span>42 rows imported</span></div>
+        <div><i class="fa-solid fa-clone"></i><span>3 duplicates skipped</span></div>
+        <div><i class="fa-solid fa-triangle-exclamation"></i><span>Row 18: date must be YYYY-MM-DD</span></div>
+      </div>
+    </article>
+
+    <article class="tile tile-wide" data-reveal>
+      <p class="kicker">Analytics</p>
+      <h3>Months at a glance, without the clutter.</h3>
+      <p>Income against spending, your true running balance, and where the money actually went.</p>
+      <div class="demo" aria-hidden="true">
+        <div class="demo-bars">
+          {% for inc, exp in [(68, 52), (80, 61), (70, 44), (88, 58), (74, 40), (92, 47), (78, 50), (86, 43)] %}
+            <div><span style="height: {{ inc }}%; animation-delay: {{ loop.index0 * 0.07 }}s"></span><span style="height: {{ exp }}%; animation-delay: {{ loop.index0 * 0.07 + 0.04 }}s"></span></div>
+          {% endfor %}
+        </div>
+      </div>
+    </article>
+
+    <article class="tile" data-reveal>
+      <p class="kicker">Smart categories</p>
+      <h3>Learns how you label things.</h3>
+      <p>Suggestions come from your own history, never from anyone else's.</p>
+      <div class="demo" aria-hidden="true">
+        <div class="demo-input"><span>Swiggy order</span></div>
+        <span class="suggest-chip" style="margin-top: 12px"><i class="fa-solid fa-wand-magic-sparkles"></i> Use Food (96% match)</span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <header class="section-head center" data-reveal>
+    <p class="kicker"><span class="dot" aria-hidden="true"></span> How it works</p>
+    <h2>Three habits. <em>One calm view.</em></h2>
+  </header>
+  <div class="steps" data-reveal-group>
+    <div class="step" data-reveal><div class="numeral">i.</div><h3>Log in seconds</h3><p>Quick add, the assistant, or a CSV import. Categories are suggested from your own history.</p></div>
+    <div class="step" data-reveal><div class="numeral">ii.</div><h3>Set monthly limits</h3><p>Budget the categories that matter, or carry last month's forward in one click.</p></div>
+    <div class="step" data-reveal><div class="numeral">iii.</div><h3>Check your pace</h3><p>See what's on track, what's at risk, and one concrete thing to do next.</p></div>
+  </div>
+</section>
+
+<section class="section" id="privacy">
+  <div class="privacy" data-reveal>
+    <div>
+      <p class="kicker"><span class="dot" aria-hidden="true"></span> Privacy &amp; security</p>
+      <h2>Your money data <em>stays yours.</em></h2>
+    </div>
+    <ul data-reveal-group>
+      <li data-reveal><i class="fa-solid fa-key" aria-hidden="true"></i><div><strong>Properly protected accounts</strong><span>Salted, hashed passwords, signed HTTP-only sessions, and CSRF protection on every form.</span></div></li>
+      <li data-reveal><i class="fa-solid fa-eye-slash" aria-hidden="true"></i><div><strong>AI sees the minimum</strong><span>Insights use monthly totals only. No name, email or transaction list, and everything works without AI.</span></div></li>
+      <li data-reveal><i class="fa-solid fa-arrow-up-from-bracket" aria-hidden="true"></i><div><strong>Leave whenever you like</strong><span>Download everything as JSON or CSV, or permanently delete your account in one step.</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<section class="final-cta" data-reveal>
+  <p class="kicker" style="justify-content: center"><span class="dot" aria-hidden="true"></span> See it for yourself</p>
+  <h2 style="margin-top: 18px">Your money, <em>finally in focus.</em></h2>
+  <p>The demo opens a private sample account with four months of activity. It disappears on its own within a day.</p>
+  <div class="row">
+    {{ demo_button('btn btn-aurora', 'Launch the demo') }}
+    <a class="btn btn-lg btn-glass" href="{{ url_for('auth.register') }}" data-magnetic>Create your account</a>
+  </div>
+</section>
+{% endblock %}

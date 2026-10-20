@@ -2,19 +2,30 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
 # Virtual environments
 .venv/
 venv/
 ENV/
 
-# Environment variables
+# Environment variables / secrets
 .env
+.env.*
+!.env.example
 
 # Local databases / app data
 *.db
+*.db-wal
+*.db-shm
 *.sqlite
 *.sqlite3
+
+# Vercel
+.vercel/
 
 # OS / editor
 .DS_Store

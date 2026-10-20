@@ -1,0 +1,32 @@
+<button class="assistant-fab" id="assistant-fab" type="button" aria-controls="assistant" aria-expanded="false" title="Assistant (press /)">
+  <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i><span class="sr-only">Open assistant</span>
+</button>
+<section class="assistant hidden" id="assistant" role="dialog" aria-modal="false" aria-labelledby="assistant-title"
+         data-endpoint="{{ url_for('api.assistant_api') }}"
+         data-transactions="{{ url_for('api.create_transaction_api') }}"
+         data-budgets="{{ url_for('api.upsert_budget_api') }}"
+         data-categories="{{ url_for('api.create_category_api') }}">
+  <header>
+    <span class="icon-chip tone-indigo" aria-hidden="true"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+    <h2 id="assistant-title">Assistant</h2>
+    <span class="badge {{ 'badge-aurora' if ai_enabled else '' }}" title="{{ 'Understands free-form language with Gemini' if ai_enabled else 'Runs on built-in rules (no AI key configured)' }}">{{ 'Gemini' if ai_enabled else 'Built-in rules' }}</span>
+    <button class="btn btn-ghost btn-icon btn-sm" type="button" data-assistant-close aria-label="Close assistant"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+  </header>
+  <div class="log" id="assistant-log" aria-live="polite">
+    <div class="bubble bot">Hi {{ current_user.username }}! Tell me about a purchase, set a budget, or ask how you're doing this month. Nothing is saved until you confirm.</div>
+  </div>
+  <div class="examples" aria-label="Example commands">
+    <button class="chip" type="button" data-example>Paid 450 for groceries yesterday</button>
+    <button class="chip" type="button" data-example>Set food budget to 6000</button>
+    <button class="chip" type="button" data-example>What's my balance?</button>
+    <button class="chip" type="button" data-example>Where did my money go?</button>
+  </div>
+  <form id="assistant-form" autocomplete="off">
+    <label class="sr-only" for="assistant-input">Message the assistant</label>
+    <input class="input" id="assistant-input" maxlength="300" placeholder="Type or tap the mic…">
+    <button type="button" class="btn btn-icon mic" id="assistant-mic" aria-label="Speak a command" aria-pressed="false" title="Speak (Chrome / Edge)">
+      <i class="fa-solid fa-microphone" aria-hidden="true"></i>
+    </button>
+    <button class="btn btn-primary btn-icon" type="submit" aria-label="Send"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
+  </form>
+</section>

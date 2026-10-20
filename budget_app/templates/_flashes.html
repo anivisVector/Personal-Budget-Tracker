@@ -1,0 +1,15 @@
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% set icons = {'success': 'fa-circle-check', 'info': 'fa-circle-info', 'warning': 'fa-triangle-exclamation', 'danger': 'fa-circle-xmark'} %}
+    <div class="alerts" role="status" aria-live="polite">
+      {% for category, message in messages %}
+        {% set c = category if category in icons else 'info' %}
+        <div class="alert alert-{{ c }}">
+          <i class="fa-solid {{ icons[c] }}" aria-hidden="true"></i>
+          <div>{{ message }}</div>
+          <button class="alert-close" type="button" aria-label="Dismiss message" data-dismiss><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}

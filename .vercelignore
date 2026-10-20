@@ -1,0 +1,12 @@
+# Never upload local secrets or data when deploying with the Vercel CLI.
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+tests/
+docs/

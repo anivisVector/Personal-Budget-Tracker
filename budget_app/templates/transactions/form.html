@@ -1,0 +1,82 @@
+{% extends 'layouts/app.html' %}
+{% import '_macros.html' as m with context %}
+{% block title %}{{ 'Edit transaction' if txn is not none else 'New transaction' }}{% endblock %}
+
+{% block content %}
+{% set editing = txn is not none %}
+{% set back = next or url_for('transactions.index') %}
+<div class="page-header reveal">
+  <div>
+    <h1>{{ 'Edit transaction' if editing else 'New transaction' }}</h1>
+    <p>{{ 'Update the details below.' if editing else 'Amount, type, category and date are required; the rest is optional.' }}</p>
+  </div>
+  {% if editing %}
+    <div class="actions">
+      {{ m.delete_button(url_for('transactions.delete', txn_id=txn.id), 'Delete this transaction? This can\'t be undone.', next=next) }}
+    </div>
+  {% endif %}
+</div>
+
+<section class="card card-accent reveal-2" style="max-width: 760px">
+  <form class="card-body" method="post" id="txn-form" data-suggest="{{ url_for('api.suggest_api') }}" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <div class="form-grid cols-2">
+      <fieldset class="field field-full" style="border: 0; padding: 0; margin: 0">
+        <legend class="label" style="margin-bottom: 6px">Type</legend>
+        <div class="segmented type-toggle">
+          <input type="radio" id="type-expense" name="type" value="expense" {{ 'checked' if values.get('type', 'expense') != 'income' }}>
+          <label for="type-expense"><i class="fa-solid fa-arrow-trend-down" aria-hidden="true"></i> Expense</label>
+          <input type="radio" id="type-income" name="type" value="income" {{ 'checked' if values.get('type') == 'income' }}>
+          <label for="type-income"><i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i> Income</label>
+        </div>
+        {{ m.field_error(errors, 'type') }}
+      </fieldset>
+
+      <div class="field">
+        <label class="label" for="amount">Amount</label>
+        <div class="input-prefix"><span>₹</span><input class="input" id="amount" name="amount" inputmode="decimal" value="{{ values.get('amount', '') }}" placeholder="0.00" required autofocus{{ m.invalid(errors, 'amount') }}></div>
+        {{ m.field_error(errors, 'amount') }}
+      </div>
+      <div class="field">
+        <label class="label" for="date">Date</label>
+        <input class="input" id="date" name="date" type="date" value="{{ values.get('date', '') }}" required{{ m.invalid(errors, 'date') }}>
+        {{ m.field_error(errors, 'date') }}
+      </div>
+
+      <div class="field">
+        <label class="label" for="title">Title <span class="optional">(optional)</span></label>
+        <input class="input" id="title" name="title" maxlength="80" value="{{ values.get('title', '') or '' }}" placeholder="e.g. Swiggy dinner">
+      </div>
+      <div class="field">
+        <label class="label" for="category">Category</label>
+        <select class="select" id="category" name="category" required{{ m.invalid(errors, 'category') }}>
+          <option value="">Choose…</option>
+          {% for c in categories %}
+            <option value="{{ c.name }}" data-type="{{ c.type }}" {{ 'selected' if (values.get('category') or '')|lower == c.name|lower }}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+        {{ m.field_error(errors, 'category') }}
+        <div id="suggestion" aria-live="polite"></div>
+      </div>
+
+      <div class="field field-full">
+        <label class="label" for="description">Note <span class="optional">(optional)</span></label>
+        <input class="input" id="description" name="description" maxlength="240" value="{{ values.get('description', '') or '' }}" placeholder="Anything you'll want to remember">
+      </div>
+    </div>
+
+    <div class="row" style="margin-top: 22px">
+      <button class="btn btn-primary" type="submit"><i class="fa-solid fa-check" aria-hidden="true"></i> {{ 'Save changes' if editing else 'Save transaction' }}</button>
+      {% if not editing %}<button class="btn" type="submit" name="add_another" value="1">Save &amp; add another</button>{% endif %}
+      <a class="btn btn-ghost" href="{{ back }}">Cancel</a>
+      <span class="spacer"></span>
+      <a class="muted" style="font-size: 0.85rem" href="{{ url_for('categories.index') }}">Manage categories</a>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='js/transaction-form.js', v=asset_version) }}" defer></script>
+{% endblock %}

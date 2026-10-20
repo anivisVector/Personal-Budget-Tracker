@@ -1,0 +1,18 @@
+line-length = 140
+target-version = "py312"
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "S"]
+ignore = [
+    "E501",  # long SQL strings read better on one line
+    "S608",  # SQL built with f-strings only interpolates whitelisted fragments; values are always parameters
+]
+
+[lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S107"]
+# Form-field names like "confirm_password" used as error keys are not secrets.
+"budget_app/validation.py" = ["S105"]
+"budget_app/routes/account.py" = ["S105"]
+
+[format]
+quote-style = "single"
