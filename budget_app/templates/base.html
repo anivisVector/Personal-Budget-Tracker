@@ -6,8 +6,8 @@
   <title>{% block title %}{% endblock %} · {{ app_name }}</title>
   <meta name="description" content="{% block description %}{{ app_name }} is a personal budget tracker with natural-language entry, budget pace alerts, clear analytics and a voice assistant.{% endblock %}">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="theme-color" content="#f5f3ec" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#06100c" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#e1ddeb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#07071a" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="{{ url_for('static', filename='favicon.svg', v=asset_version) }}" type="image/svg+xml">
   <script nonce="{{ csp_nonce() }}">
     (function () {
