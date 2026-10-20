@@ -17,8 +17,6 @@
         // No stored choice = follow the operating system's light/dark setting.
         var t = localStorage.getItem('theme');
         if (t === 'light' || t === 'dark') root.setAttribute('data-theme', t);
-        var p = localStorage.getItem('palette');
-        if ({{ palettes|map('first')|list|tojson }}.indexOf(p) > -1) root.setAttribute('data-palette', p);
       } catch (e) {}
     })();
   </script>

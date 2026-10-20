@@ -149,40 +149,6 @@
   syncModes();
   document.addEventListener('themechange', syncModes);
 
-  // ---- Color palettes --------------------------------------------------------------------
-  const paletteButtons = document.querySelectorAll('[data-palette-option]');
-  const palettes = Array.from(new Set(Array.from(paletteButtons, (b) => b.dataset.paletteOption)));
-  const currentPalette = () => root.getAttribute('data-palette') || palettes[0];
-  function syncPalettes() {
-    paletteButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.paletteOption === currentPalette())));
-  }
-  paletteButtons.forEach((b) => b.addEventListener('click', () => {
-    const key = b.dataset.paletteOption;
-    if (!palettes.includes(key) || key === currentPalette()) return;
-    withTransition(() => {
-      root.setAttribute('data-palette', key);
-      try { localStorage.setItem('palette', key); } catch (_) { /* storage blocked */ }
-      syncPalettes();
-      document.dispatchEvent(new CustomEvent('themechange'));
-    });
-  }));
-  syncPalettes();
-
-  document.querySelectorAll('[data-palette-picker]').forEach((picker) => {
-    const button = picker.querySelector('[data-palette-button]');
-    const menu = picker.querySelector('.palette-menu');
-    const close = () => { menu.hidden = true; button.setAttribute('aria-expanded', 'false'); };
-    button.addEventListener('click', (event) => {
-      event.stopPropagation();
-      const opening = menu.hidden;
-      menu.hidden = !opening;
-      button.setAttribute('aria-expanded', String(opening));
-      if (opening) menu.querySelector('[aria-pressed="true"]')?.focus();
-    });
-    document.addEventListener('click', (event) => { if (!picker.contains(event.target)) close(); });
-    picker.addEventListener('keydown', (event) => { if (event.key === 'Escape') { close(); button.focus(); } });
-  });
-
   // ---- Mobile navigation drawer ----------------------------------------------------
   const sidebar = document.getElementById('sidebar');
   const toggle = document.querySelector('[data-menu-toggle]');
@@ -460,7 +426,7 @@
     });
   }
 
-  // ---- Starfield (public pages; visible in dark mode for star-enabled palettes) --------
+  // ---- Starfield (public pages; visible in dark mode) ------------------------------
   const starCanvas = document.querySelector('canvas.stars');
   if (starCanvas) {
     const ctx = starCanvas.getContext('2d');
@@ -495,7 +461,7 @@
         speed: (Math.random() * 1.2 + 0.25) / 1000, // radians per ms: 5-25 s twinkles
       }));
     };
-    // The theme decides: --stars-opacity is 0 in light mode and for palettes without stars.
+    // The theme decides: --stars-opacity is 0 in light mode.
     const visible = () => Number(getComputedStyle(root).getPropertyValue('--stars-opacity').trim() || 0) > 0;
     const loop = (t) => { draw(t); raf = requestAnimationFrame(loop); };
     const start = () => {

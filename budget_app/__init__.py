@@ -21,15 +21,6 @@ log = logging.getLogger('budget_app')
 
 APP_NAME = 'Ledgerly'
 
-# Curated color themes (key, name, description). The first one is the default.
-PALETTES = [
-    ('nebula', 'Nebula', 'Violet, blue & cyan'),
-    ('ink', 'Ink', 'Indigo & tangerine'),
-    ('midnight', 'Midnight', 'Navy & electric cyan'),
-    ('lagoon', 'Lagoon', 'Deep teal & coral'),
-    ('sage', 'Sage', 'Forest green & terracotta'),
-]
-
 
 def _configure_logging(app: Flask) -> None:
     if not logging.getLogger().handlers:
@@ -92,7 +83,6 @@ def create_app(overrides: dict | None = None) -> Flask:
     app.add_template_filter(nice_date, 'nice_date')
     app.add_template_filter(category_icon, 'cat_icon')
     app.jinja_env.globals['today'] = lambda: today_in(settings.timezone)
-    app.jinja_env.globals['palettes'] = PALETTES
 
     _register_error_handlers(app)
     _register_blueprints(app)

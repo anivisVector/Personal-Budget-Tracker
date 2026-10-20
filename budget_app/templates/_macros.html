@@ -61,28 +61,6 @@
 <span class="icon-chip {{ txn.type }}" aria-hidden="true"><i class="fa-solid {{ txn.category|cat_icon(txn.type) }}"></i></span>
 {%- endmacro %}
 
-{% macro palette_options(cls='palette-option') -%}
-  {% for key, name, desc in palettes %}
-    <button type="button" class="{{ cls }}" data-palette-option="{{ key }}" aria-pressed="{{ 'true' if loop.first else 'false' }}">
-      <span class="swatch swatch-{{ key }}" aria-hidden="true"><i></i><i></i></span>
-      <span class="palette-label"><strong>{{ name }}</strong><small>{{ desc }}</small></span>
-      <i class="fa-solid fa-check palette-check" aria-hidden="true"></i>
-    </button>
-  {% endfor %}
-{%- endmacro %}
-
-{% macro palette_picker(uid='pal') -%}
-<div class="palette-picker" data-palette-picker>
-  <button class="btn btn-ghost btn-icon" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="{{ uid }}-menu" title="Color theme" data-palette-button>
-    <i class="fa-solid fa-palette" aria-hidden="true"></i><span class="sr-only">Choose a color theme</span>
-  </button>
-  <div class="palette-menu" id="{{ uid }}-menu" role="group" aria-label="Color theme" hidden>
-    <p class="palette-title">Color theme</p>
-    {{ palette_options() }}
-  </div>
-</div>
-{%- endmacro %}
-
 {% macro theme_toggle() -%}
 <button class="btn btn-ghost btn-icon" type="button" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
   <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
