@@ -41,19 +41,21 @@
   --display-weight: 700;
   --hero-size: clamp(2.5rem, 5.1vw, 4.4rem);
 
-  --bg: color-mix(in srgb, var(--tint) 4%, #f6f6f4);
-  --bg-raise: color-mix(in srgb, var(--tint) 2%, #fbfbfa);
-  --surface: #ffffff;
-  --surface-2: #f4f5f5;
-  --surface-3: #e6e8ea;
-  --border: rgba(17, 24, 39, 0.10);
-  --border-strong: rgba(17, 24, 39, 0.18);
-  --text: #111418;
-  --text-2: #3d434b;
-  --text-3: #5c636d;
+  /* "Lavender mist": no pure white anywhere, so light mode is easy on the eyes.
+     Every text token keeps >= 4.5:1 on every surface and soft tint below. */
+  --bg: #e1ddeb;
+  --bg-raise: #e7e3f0;
+  --surface: #edeaf5;
+  --surface-2: #e5e1ef;
+  --surface-3: #d7d2e5;
+  --border: rgba(45, 30, 110, 0.11);
+  --border-strong: rgba(45, 30, 110, 0.19);
+  --text: #16132a;
+  --text-2: #3c3854;
+  --text-3: #5b5672;
 
   --primary: var(--pri-l); --primary-2: var(--pri-2-l); --primary-deep: var(--pri-deep-l);
-  --accent: var(--acc-l); --accent-text: var(--acc-l); --link: var(--pri-l);
+  --accent: var(--acc-l); --accent-text: #0a6680; --link: var(--pri-l);
   --accent-grad: linear-gradient(135deg, var(--pri-l), var(--acc-l));
   --sheen: linear-gradient(90deg, #a21caf, #6d28d9 35%, #2563eb 65%, #0e7490);
   --on-accent: #ffffff;
@@ -61,10 +63,10 @@
   --btn-text: #ffffff;
   --cta-bg: linear-gradient(120deg, #7c3aed, #2563eb);
   --cta-text: #ffffff;
-  --input-bg: #ffffff;
-  --input-shadow: inset 0 1px 2px rgba(17, 24, 39, 0.05);
-  --seg-active: #ffffff;
-  --glass: rgba(255, 255, 255, 0.8);
+  --input-bg: #f3f1f9;
+  --input-shadow: inset 0 1px 2px rgba(40, 28, 100, 0.06);
+  --seg-active: #f5f3fa;
+  --glass: rgba(237, 234, 245, 0.8);
 
   /* Derived tokens (same formulas in both modes) */
   --primary-soft: color-mix(in srgb, var(--primary) 9%, transparent);
@@ -73,9 +75,9 @@
   --accent-soft: color-mix(in srgb, var(--accent) 10%, transparent);
   --accent-line: color-mix(in srgb, var(--accent) 34%, transparent);
   --spot: color-mix(in srgb, var(--primary) 7%, transparent);
-  --pool-1: rgba(124, 58, 237, 0.16);
-  --pool-2: rgba(34, 211, 238, 0.16);
-  --pool-3: rgba(219, 39, 119, 0.08);
+  --pool-1: rgba(124, 58, 237, 0.22);
+  --pool-2: rgba(34, 211, 238, 0.18);
+  --pool-3: rgba(219, 39, 119, 0.10);
   --stars-opacity: 0;
   --ring: 0 0 0 1px color-mix(in srgb, var(--primary) 60%, transparent), 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent);
   --nav-active: linear-gradient(90deg, var(--primary-soft), transparent 85%);
@@ -84,27 +86,27 @@
   --btn-shadow: 0 10px 26px var(--primary-glow), inset 0 1px 0 rgba(255, 255, 255, 0.22);
   --cta-shadow: 0 12px 32px color-mix(in srgb, var(--accent) 26%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.25);
 
-  --income: #0b7a52;
+  --income: #086c48;
   --income-soft: rgba(11, 122, 82, 0.09);
   --good: #12925f;
   --warning: #e0a12e;
   --critical: #cf4c3f;
-  --good-text: #0b7a52;
-  --warning-text: #8a5a00;
+  --good-text: #086c48;
+  --warning-text: #805300;
   --critical-text: #b42318;
   --good-soft: rgba(18, 146, 95, 0.10);
   --warning-soft: rgba(224, 161, 46, 0.14);
   --critical-soft: rgba(207, 76, 63, 0.10);
 
   --series-1: #2a78d6;   /* income: validated with --series-2 for colorblind separation */
-  --series-2: #eb6834;   /* spending */
-  --grid: rgba(17, 24, 39, 0.07);
-  --axis: rgba(17, 24, 39, 0.2);
+  --series-2: #dc5c2a;   /* spending (>= 3:1 on the light surface) */
+  --grid: rgba(45, 30, 110, 0.08);
+  --axis: rgba(45, 30, 110, 0.22);
 
-  --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06);
-  --shadow-md: 0 14px 34px rgba(17, 24, 39, 0.09);
-  --shadow-lg: 0 30px 70px rgba(17, 24, 39, 0.16);
-  --grain-opacity: 0.03;
+  --shadow-sm: 0 1px 2px rgba(40, 28, 100, 0.07);
+  --shadow-md: 0 14px 34px rgba(40, 28, 100, 0.10);
+  --shadow-lg: 0 30px 70px rgba(40, 28, 100, 0.18);
+  --grain-opacity: 0.035;
   --aura-opacity: 0.38;
 
   --radius-sm: 8px;
