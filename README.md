@@ -4,7 +4,7 @@
 
 Know where every rupee goes, without the spreadsheet. Ledgerly is a full-stack personal finance app for logging income and expenses, setting monthly budgets with **pace projections**, and understanding spending through clear analytics. You can type entries in plain words ("spent 2.5k on dinner last Friday") or use the built-in **voice & chat assistant**.
 
-**Live demo:** _add your Vercel URL here after deploying_. The landing page has a **Try the live demo** button that creates a private sample account (deleted after 24 hours).
+**Live demo:** [ledgerly-tracker-eight.vercel.app](https://ledgerly-tracker-eight.vercel.app). The landing page has a **Try the live demo** button that creates a private sample account (deleted after 24 hours).
 
 ![Landing page](docs/screenshots/landing-dark.jpg)
 
