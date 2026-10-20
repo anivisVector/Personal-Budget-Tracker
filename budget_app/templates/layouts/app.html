@@ -45,8 +45,8 @@
     {% if current_user.is_demo %}
       <div class="demo-banner">
         <i class="fa-solid fa-flask" aria-hidden="true"></i>
-        <span><strong>Demo account.</strong> Explore freely: this sample data is deleted automatically within 24 hours.</span>
-        <a href="{{ url_for('auth.register') }}">Create your own account</a>
+        <span><strong>Demo account.</strong> <span class="hide-xs">Explore freely: this sample data is deleted automatically within 24 hours.</span><span class="show-xs">Deleted within 24h.</span></span>
+        <a href="{{ url_for('auth.register') }}"><span class="hide-xs">Create your own account</span><span class="show-xs">Sign up</span></a>
       </div>
     {% endif %}
     <header class="topbar">

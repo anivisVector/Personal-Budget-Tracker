@@ -426,6 +426,23 @@
     });
   }
 
+  // ---- Transaction filters: on phones, everything but search folds behind a toggle ----
+  document.querySelectorAll('[data-filters-toggle]').forEach((button) => {
+    const form = button.closest('form');
+    button.addEventListener('click', () => {
+      const open = form.classList.toggle('is-open');
+      button.setAttribute('aria-expanded', String(open));
+    });
+  });
+
+  // ---- Pause decorative loops (aura, spinning card edge, ticker) while off-screen ----
+  if ('IntersectionObserver' in window) {
+    const pauser = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => entry.target.classList.toggle('is-paused', !entry.isIntersecting));
+    });
+    document.querySelectorAll('.hero-visual, .balance-card, .ticker').forEach((el) => pauser.observe(el));
+  }
+
   // ---- Starfield (public pages; visible in dark mode) ------------------------------
   const starCanvas = document.querySelector('canvas.stars');
   if (starCanvas) {
@@ -448,9 +465,12 @@
     const seed = () => {
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       width = window.innerWidth;
-      height = window.innerHeight;
+      // Cover the tallest the viewport gets (phone toolbars collapse while scrolling), so a
+      // toolbar sliding in or out never re-seeds; the stage clips the overhang.
+      height = Math.max(window.innerHeight, window.screen.height || 0);
       starCanvas.width = width * dpr;
       starCanvas.height = height * dpr;
+      starCanvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       stars = Array.from({ length: Math.round((width * height) / 8500) }, () => ({
         x: Math.random() * width,
@@ -463,14 +483,21 @@
     };
     // The theme decides: --stars-opacity is 0 in light mode.
     const visible = () => Number(getComputedStyle(root).getPropertyValue('--stars-opacity').trim() || 0) > 0;
-    const loop = (t) => { draw(t); raf = requestAnimationFrame(loop); };
+    // Twinkles take 5-25 s, so 20 redraws a second is indistinguishable from 60 at a third of the cost.
+    let timer = 0;
+    const loop = () => { raf = requestAnimationFrame((t) => { draw(t); timer = setTimeout(loop, 50); }); };
     const start = () => {
       cancelAnimationFrame(raf);
+      clearTimeout(timer);
       if (!visible()) { ctx.clearRect(0, 0, width, height); return; }
-      if (reduceMotion() || document.hidden) draw(0); else raf = requestAnimationFrame(loop);
+      if (reduceMotion() || document.hidden) draw(0); else loop();
     };
     let resizeTimer = 0;
-    window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => { seed(); start(); }, 200); });
+    window.addEventListener('resize', () => {
+      if (window.innerWidth === width && window.innerHeight <= height) return; // toolbar show/hide
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => { seed(); start(); }, 200);
+    });
     document.addEventListener('visibilitychange', start);
     document.addEventListener('themechange', () => setTimeout(start, 60));
     seed();
