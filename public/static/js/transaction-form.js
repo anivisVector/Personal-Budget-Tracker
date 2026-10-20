@@ -4,7 +4,7 @@
   'use strict';
   const form = document.getElementById('txn-form');
   if (!form) return;
-  const { api } = window.Ledgerly;
+  const { api } = window.Lekha;
   const select = document.getElementById('category');
   const title = document.getElementById('title');
   const note = document.getElementById('description');

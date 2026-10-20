@@ -104,7 +104,7 @@ def export_json():
     return Response(
         json.dumps(data, indent=2, ensure_ascii=False),
         mimetype='application/json',
-        headers={'Content-Disposition': 'attachment; filename="budget-data-export.json"', 'Cache-Control': 'private, no-store'},
+        headers={'Content-Disposition': 'attachment; filename="lekha-data-export.json"', 'Cache-Control': 'private, no-store'},
     )
 
 

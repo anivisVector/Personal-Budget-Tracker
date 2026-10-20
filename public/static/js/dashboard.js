@@ -1,7 +1,7 @@
 /* Dashboard: natural-language quick add and asynchronously loaded insights. */
 (function () {
   'use strict';
-  const { api, formatINR, niceDate } = window.Ledgerly;
+  const { api, formatINR, niceDate } = window.Lekha;
 
   function el(tag, attrs = {}, ...children) {
     const node = document.createElement(tag);

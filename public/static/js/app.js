@@ -1,4 +1,4 @@
-/* Ledgerly interaction layer.
+/* Lekha interaction layer.
    Small, independent modules: API helper, theme, navigation, toasts, dialogs,
    scroll reveals, counters, spotlight/tilt/parallax, magnetic buttons, page
    progress, landing-page demos and form helpers. Every animated module checks
@@ -102,7 +102,7 @@
     group.remove();
   });
 
-  window.Ledgerly = { api, formatINR, niceDate, toast };
+  window.Lekha = { api, formatINR, niceDate, toast };
 
   // ---- Theme -------------------------------------------------------------------------
   const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
