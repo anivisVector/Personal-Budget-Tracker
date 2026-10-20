@@ -1,0 +1,97 @@
+{% extends 'layouts/app.html' %}
+{% import '_macros.html' as m with context %}
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="page-header reveal">
+  <div>
+    <h1>Analytics</h1>
+    <p>{{ series[0].label }} – {{ series[-1].label }} · every figure below covers this same range.</p>
+  </div>
+  <nav class="segmented" aria-label="Time range">
+    {% for r in ranges %}
+      <a href="{{ url_for('analytics.index', months=r) }}"{% if r == months %} aria-current="true"{% endif %}>{{ r }} months</a>
+    {% endfor %}
+  </nav>
+</div>
+
+<div class="kpis kpis-4 reveal-2" style="margin-bottom: 20px">
+  <div class="card kpi" data-reveal><span class="icon-chip tone-teal" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span><div class="kpi-label">Income</div><div class="kpi-value" data-countup="{{ stats.income }}" data-decimals="0">{{ stats.income|inr(0) }}</div></div>
+  <div class="card kpi" data-reveal><span class="icon-chip tone-pink" aria-hidden="true"><i class="fa-solid fa-arrow-trend-down"></i></span><div class="kpi-label">Spending</div><div class="kpi-value" data-countup="{{ stats.expense }}" data-decimals="0">{{ stats.expense|inr(0) }}</div><div class="kpi-meta">Avg {{ stats.avg_expense|inr(0) }} per completed month</div></div>
+  <div class="card kpi" data-reveal><span class="icon-chip tone-indigo" aria-hidden="true"><i class="fa-solid fa-scale-balanced"></i></span><div class="kpi-label">Net saved</div><div class="kpi-value">{{ stats.net|inr(0, sign=true) }}</div></div>
+  <div class="card kpi" data-reveal><span class="icon-chip tone-amber" aria-hidden="true"><i class="fa-solid fa-percent"></i></span><div class="kpi-label">Savings rate</div><div class="kpi-value">{{ stats.savings_rate|pct }}</div><div class="kpi-meta">of income kept</div></div>
+</div>
+
+<section class="card" data-reveal style="margin-bottom: 20px" aria-labelledby="ie-title">
+  <div class="card-header">
+    <div><h2 id="ie-title"><span class="title-icon tone-indigo" aria-hidden="true"><i class="fa-solid fa-chart-column"></i></span> Income vs spending</h2><p>Monthly totals; hover or focus a month for details.</p></div>
+    <div class="legend" aria-hidden="true">
+      <span class="key"><span class="swatch" style="background: var(--series-1)"></span>Income</span>
+      <span class="key"><span class="swatch" style="background: var(--series-2)"></span>Spending</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="chart-box"><canvas id="chart-monthly" role="img" aria-label="Column chart of monthly income and spending. The same values are in the table below."></canvas></div>
+    <details class="disclosure" style="margin-top: 14px">
+      <summary><i class="fa-solid fa-chevron-right" aria-hidden="true"></i> View as table</summary>
+      <div class="table-wrap" style="margin-top: 10px">
+        <table class="table">
+          <thead><tr><th scope="col">Month</th><th scope="col" class="right">Income</th><th scope="col" class="right">Spending</th><th scope="col" class="right">Net</th><th scope="col" class="right">Balance</th><th scope="col" class="right">Savings rate</th></tr></thead>
+          <tbody>
+            {% for r in series|reverse %}
+              <tr><th scope="row" style="font-weight: 600">{{ r.label }}</th><td class="right num">{{ r.income|inr(0) }}</td><td class="right num">{{ r.expense|inr(0) }}</td><td class="right num">{{ r.net|inr(0, sign=true) }}</td><td class="right num">{{ r.balance|inr(0) }}</td><td class="right num">{{ r.savings_rate|pct }}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+</section>
+
+<div class="grid grid-1-1" data-reveal-group>
+  <section class="card" data-reveal aria-labelledby="bal-title">
+    <div class="card-header"><div><h2 id="bal-title"><span class="title-icon tone-teal" aria-hidden="true"><i class="fa-solid fa-chart-line"></i></span> Balance over time</h2><p>Your actual running balance at each month end.</p></div></div>
+    <div class="card-body"><div class="chart-box" style="height: 340px"><canvas id="chart-balance" role="img" aria-label="Line chart of running balance by month. Values are in the table above."></canvas></div></div>
+  </section>
+
+  <section class="card" data-reveal aria-labelledby="cat-title">
+    <div class="card-header"><div><h2 id="cat-title"><span class="title-icon tone-pink" aria-hidden="true"><i class="fa-solid fa-chart-simple"></i></span> Spending by category</h2><p>Share of spending in this range.</p></div></div>
+    <div class="card-body">
+      {% if categories %}
+        {% set top = categories[0].total or 1 %}
+        <div class="hbars">
+          {% for c in categories %}
+            <div class="hbar{{ ' is-other' if c.is_other }}">
+              <span class="name">{{ c.category }}</span>
+              <span class="value">{{ c.total|inr(0) }}<small>{{ (c.share * 100)|round|int }}%</small></span>
+              <div class="track" aria-hidden="true"><span style="width: {{ (c.total / top * 100)|round(1) }}%; animation-delay: {{ loop.index0 * 0.05 }}s"></span></div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted">No spending in this range yet.</p>
+      {% endif %}
+    </div>
+  </section>
+</div>
+
+{% if stats.highest %}
+<section class="card" data-reveal style="margin-top: 20px" aria-labelledby="hl-title">
+  <div class="card-header"><h2 id="hl-title"><span class="title-icon tone-amber" aria-hidden="true"><i class="fa-solid fa-star"></i></span> Highlights</h2></div>
+  <div class="card-body">
+    <div class="kpis kpis-3" data-reveal-group>
+      <div class="kpi" style="padding: 0"><div class="kpi-label">Highest spending month</div><div class="kpi-value" style="font-size: 1.1rem">{{ stats.highest.label }}</div><div class="kpi-meta">{{ stats.highest.expense|inr(0) }} spent</div></div>
+      <div class="kpi" style="padding: 0"><div class="kpi-label">Best saving month</div><div class="kpi-value" style="font-size: 1.1rem">{{ stats.best_saving.label }}</div><div class="kpi-meta">{{ stats.best_saving.net|inr(0, sign=true) }} net</div></div>
+      <div class="kpi" style="padding: 0"><div class="kpi-label">Top category</div><div class="kpi-value" style="font-size: 1.1rem">{{ categories[0].category if categories else '—' }}</div><div class="kpi-meta">{{ categories[0].total|inr(0) if categories else '' }}</div></div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<script type="application/json" id="analytics-data">{{ series|tojson }}</script>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" integrity="sha384-b0GXujLkk9eYYSmcSfoyZbfyElGAQnDyY0skCHSG6w3JgTMFnz11ggrTAr7seu9f" crossorigin="anonymous" defer></script>
+  <script src="{{ url_for('static', filename='js/analytics.js', v=asset_version) }}" defer></script>
+{% endblock %}

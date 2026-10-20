@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% import '_macros.html' as m with context %}
+
+{% block body %}
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="aurora-bg" aria-hidden="true"><span></span><span></span><span></span><canvas class="stars"></canvas></div>
+<header class="public-nav">
+  <div class="inner">
+    <a class="brand" href="{{ url_for('pages.home') }}">{{ m.brand_mark('bm-pub') }}<span>{{ app_name }}</span></a>
+    {% if request.endpoint == 'pages.home' %}
+      <nav class="links" aria-label="Page sections">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#privacy">Privacy</a>
+      </nav>
+    {% endif %}
+    <span class="spacer"></span>
+    {{ m.theme_toggle() }}
+    {% if current_user %}
+      <a class="btn btn-primary btn-sm" href="{{ url_for('dashboard.index') }}">Open dashboard</a>
+    {% else %}
+      {% if request.endpoint != 'auth.login' %}<a class="btn btn-ghost btn-sm" href="{{ url_for('auth.login') }}">Sign in</a>{% endif %}
+      {% if request.endpoint != 'auth.register' %}<a class="btn btn-primary btn-sm" href="{{ url_for('auth.register') }}">Get started</a>{% endif %}
+    {% endif %}
+  </div>
+</header>
+<main id="main" class="public-main" tabindex="-1">
+  {% include '_flashes.html' %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="footer">
+  <div class="inner">
+    <span>© {{ today().year }} {{ app_name }} · A personal finance project. Not financial advice.</span>
+    <span>Amounts in Indian rupees (₹)</span>
+  </div>
+</footer>
+{% endblock %}

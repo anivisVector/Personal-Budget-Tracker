@@ -1,0 +1,44 @@
+{% extends 'layouts/public.html' %}
+{% import '_macros.html' as m with context %}
+{% block title %}Create account{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+  <div class="card auth-card card-accent reveal">
+    <div class="card-pad">
+      <h1>Open your <em>ledger.</em></h1>
+      <p class="lead">Free, private, and ready in under a minute.</p>
+
+      <form method="post" action="{{ url_for('auth.register') }}" class="stack" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="field">
+          <label class="label" for="username">Username</label>
+          <input class="input" id="username" name="username" value="{{ form.get('username', '') }}" autocomplete="username" required minlength="3" maxlength="32" pattern="[A-Za-z0-9_.\-]{3,32}" aria-describedby="username-hint"{{ m.invalid(errors, 'username') }}>
+          {% if errors.get('username') %}{{ m.field_error(errors, 'username') }}{% else %}<p class="hint" id="username-hint">3–32 letters, numbers, dots, dashes or underscores.</p>{% endif %}
+        </div>
+        <div class="field">
+          <label class="label" for="email">Email</label>
+          <input class="input" id="email" name="email" type="email" value="{{ form.get('email', '') }}" autocomplete="email" required maxlength="254"{{ m.invalid(errors, 'email') }}>
+          {{ m.field_error(errors, 'email') }}
+        </div>
+        <div class="field">
+          <label class="label" for="password">Password</label>
+          <div class="password-wrap">
+            <input class="input" id="password" name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="128" aria-describedby="pw-meter-label" data-strength="pw-meter"{{ m.invalid(errors, 'password') }}>
+            <button class="btn btn-ghost btn-icon btn-sm toggle" type="button" data-password-toggle="password" aria-label="Show password" aria-pressed="false"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
+          </div>
+          <div class="pw-meter" id="pw-meter" data-score="0" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+          {% if errors.get('password') %}{{ m.field_error(errors, 'password') }}{% else %}<p class="hint" id="pw-meter-label" aria-live="polite">At least 8 characters. A short phrase works well.</p>{% endif %}
+        </div>
+        <div class="field">
+          <label class="label" for="confirm_password">Confirm password</label>
+          <input class="input" id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" required data-match{{ m.invalid(errors, 'confirm_password') }}>
+          {% if errors.get('confirm_password') %}{{ m.field_error(errors, 'confirm_password') }}{% else %}<p class="hint" id="match-note" aria-live="polite"></p>{% endif %}
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Create account</button>
+      </form>
+      <p class="auth-alt">Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'layouts/app.html' %}
+{% import '_macros.html' as m with context %}
+{% block title %}Transactions{% endblock %}
+
+{% block content %}
+<div class="page-header reveal">
+  <div>
+    <h1>Transactions</h1>
+    <p>Search, filter, edit and export your history.</p>
+  </div>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('transactions.import_view') }}"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Import</a>
+    <a class="btn" href="{{ url_for('transactions.export_csv', **filters.as_query()) }}"><i class="fa-solid fa-file-csv" aria-hidden="true"></i> Export{{ ' filtered' if filters.active }}</a>
+    <a class="btn btn-primary" href="{{ url_for('transactions.new', next=request.full_path) }}"><i class="fa-solid fa-plus" aria-hidden="true"></i> New</a>
+  </div>
+</div>
+
+<section class="card" data-reveal aria-label="Transaction list">
+  <form class="filters" method="get" action="{{ url_for('transactions.index') }}" role="search">
+    <div class="form-grid">
+      <div class="field field-search">
+        <label class="label" for="q">Search</label>
+        <div class="input-prefix"><span><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></span><input class="input" id="q" name="q" value="{{ filters.q }}" placeholder="Title, note or category"></div>
+      </div>
+      <div class="field">
+        <label class="label" for="type">Type</label>
+        <select class="select" id="type" name="type">
+          <option value="">All</option>
+          <option value="expense" {{ 'selected' if filters.type == 'expense' }}>Expenses</option>
+          <option value="income" {{ 'selected' if filters.type == 'income' }}>Income</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="label" for="category">Category</label>
+        <select class="select" id="category" name="category">
+          <option value="">All</option>
+          {% for c in categories %}<option value="{{ c.name }}" {{ 'selected' if filters.category|lower == c.name|lower }}>{{ c.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label class="label" for="date_from">From</label>
+        <input class="input" id="date_from" name="date_from" type="date" value="{{ filters.date_from }}">
+      </div>
+      <div class="field">
+        <label class="label" for="date_to">To</label>
+        <input class="input" id="date_to" name="date_to" type="date" value="{{ filters.date_to }}">
+      </div>
+      <div class="field">
+        <label class="label" for="sort">Sort</label>
+        <select class="select" id="sort" name="sort">
+          <option value="date_desc" {{ 'selected' if filters.sort == 'date_desc' }}>Newest</option>
+          <option value="date_asc" {{ 'selected' if filters.sort == 'date_asc' }}>Oldest</option>
+          <option value="amount_desc" {{ 'selected' if filters.sort == 'amount_desc' }}>Largest</option>
+          <option value="amount_asc" {{ 'selected' if filters.sort == 'amount_asc' }}>Smallest</option>
+        </select>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 12px">
+      <button class="btn btn-primary btn-sm" type="submit"><i class="fa-solid fa-filter" aria-hidden="true"></i> Apply</button>
+      {% if filters.active or filters.sort != 'date_desc' %}<a class="btn btn-ghost btn-sm" href="{{ url_for('transactions.index') }}">Clear filters</a>{% endif %}
+    </div>
+  </form>
+
+  {% if total %}
+    <div class="summary-bar" role="status">
+      <span><strong>{{ total }}</strong> {{ 'result' if total == 1 else 'results' }}</span>
+      <span>Income <strong class="amount-income">{{ summary.income|inr }}</strong></span>
+      <span>Expenses <strong>{{ summary.expense|inr }}</strong></span>
+      <span>Net <strong>{{ (summary.income - summary.expense)|inr(2, sign=true) }}</strong></span>
+    </div>
+    <div class="table-wrap">
+      <table class="table table-cards">
+        <caption class="sr-only">Transactions, page {{ page }} of {{ pages }}</caption>
+        <thead>
+          {% macro sort_th(label, key, cls='') -%}
+            {% set asc, desc = key ~ '_asc', key ~ '_desc' %}
+            {% set active = filters.sort in (asc, desc) %}
+            {% set query = filters.as_query() %}{% set _ = query.update({'sort': asc if filters.sort == desc else desc}) %}
+            <th scope="col" class="{{ cls }}"{% if active %} aria-sort="{{ 'ascending' if filters.sort == asc else 'descending' }}"{% endif %}>
+              <a class="sort" href="{{ url_for('transactions.index', **query) }}" title="Sort by {{ label|lower }}">{{ label }} <i class="fa-solid {{ 'fa-arrow-up-short-wide' if filters.sort == asc else ('fa-arrow-down-wide-short' if active else 'fa-sort') }}" aria-hidden="true"></i></a>
+            </th>
+          {%- endmacro %}
+          <tr><th scope="col">Transaction</th>{{ sort_th('Date', 'date') }}<th scope="col">Type</th>{{ sort_th('Amount', 'amount', 'right') }}<th scope="col" class="right"><span class="sr-only">Actions</span></th></tr>
+        </thead>
+        <tbody>
+          {% for t in rows %}
+            <tr>
+              <td data-cell="title">
+                <div class="title-cell">
+                  {{ m.txn_icon(t) }}
+                  <div style="min-width: 0">
+                    <strong>{{ t.title or t.category }}</strong>
+                    <span>{{ t.category }}{% if t.description and t.description != t.title %} · {{ t.description|truncate(60) }}{% endif %}<span class="show-sm"> · {{ t.date|nice_date }}</span></span>
+                  </div>
+                </div>
+              </td>
+              <td class="nowrap hide-sm">{{ t.date|nice_date }}</td>
+              <td class="hide-sm"><span class="badge badge-{{ t.type }}">{{ t.type|capitalize }}</span></td>
+              <td data-cell="amount" class="right">{{ m.money(t.amount, t.type) }}</td>
+              <td data-cell="actions">
+                <div class="row-actions">
+                  <a class="btn btn-ghost btn-sm" href="{{ url_for('transactions.edit', txn_id=t.id, next=request.full_path) }}"><i class="fa-solid fa-pen" aria-hidden="true"></i> Edit</a>
+                  {{ m.delete_button(url_for('transactions.delete', txn_id=t.id), 'Delete "' ~ (t.title or t.category) ~ '" from ' ~ (t.date|nice_date) ~ '? This can\'t be undone.', next=request.full_path) }}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if pages > 1 %}
+      <nav class="pagination" aria-label="Pagination">
+        <span>Page {{ page }} of {{ pages }}</span>
+        <div class="row">
+          {% if page > 1 %}<a class="btn btn-sm" href="{{ url_for('transactions.index', page=page - 1, **filters.as_query()) }}" rel="prev"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i> Previous</a>{% endif %}
+          {% if page < pages %}<a class="btn btn-sm" href="{{ url_for('transactions.index', page=page + 1, **filters.as_query()) }}" rel="next">Next <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></a>{% endif %}
+        </div>
+      </nav>
+    {% endif %}
+  {% elif has_any %}
+    {% call m.empty_state('fa-magnifying-glass', 'No matches', 'Nothing matches these filters. Try a wider date range or clear the search.') %}
+      <a class="btn btn-sm" href="{{ url_for('transactions.index') }}">Clear filters</a>
+    {% endcall %}
+  {% else %}
+    {% call m.empty_state('fa-receipt', 'Your ledger is empty', 'Add your first transaction, or bring your history in with a CSV import.') %}
+      <a class="btn btn-primary btn-sm" href="{{ url_for('transactions.new') }}">Add transaction</a>
+      <a class="btn btn-sm" href="{{ url_for('transactions.import_view') }}">Import CSV</a>
+    {% endcall %}
+  {% endif %}
+</section>
+{% endblock %}

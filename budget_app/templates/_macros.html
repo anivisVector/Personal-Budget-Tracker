@@ -1,0 +1,78 @@
+{% macro brand_mark(uid='bm') -%}
+<svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="{{ uid }}-g" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop offset="0" style="stop-color: var(--card-hi-2)"/><stop offset="1" style="stop-color: var(--card-hi)"/>
+    </linearGradient>
+    <linearGradient id="{{ uid }}-b" x1="0" y1="0" x2="0" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0" style="stop-color: var(--card-1)"/><stop offset="1" style="stop-color: var(--card-2)"/>
+    </linearGradient>
+  </defs>
+  <rect x=".5" y=".5" width="31" height="31" rx="9" fill="url(#{{ uid }}-b)" stroke="url(#{{ uid }}-g)" stroke-opacity=".55"/>
+  <path d="M9 22.5h14" stroke="url(#{{ uid }}-g)" stroke-width="1.6" stroke-linecap="round" opacity=".45"/>
+  <path d="M9 18.5l4.5-4.5 3.5 3 6-6.5" fill="none" stroke="url(#{{ uid }}-g)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="23" cy="10.5" r="1.9" style="fill: var(--card-hi)"/>
+</svg>
+{%- endmacro %}
+
+{% macro field_error(errors, name) -%}
+{% if errors and errors.get(name) %}<p class="field-error" id="{{ name }}-error"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>{{ errors[name] }}</p>{% endif %}
+{%- endmacro %}
+
+{% macro invalid(errors, name) -%}
+{% if errors and errors.get(name) %} aria-invalid="true" aria-describedby="{{ name }}-error"{% endif %}
+{%- endmacro %}
+
+{% macro money(amount, type) -%}
+<span class="amount {{ 'amount-income' if type == 'income' else 'amount-expense' }}">{{ '+' if type == 'income' else '−' }}{{ amount|inr }}</span>
+{%- endmacro %}
+
+{% macro status_badge(status) -%}
+{% set map = {
+  'on_track': ('badge-good', 'fa-circle-check', 'On track'),
+  'at_risk': ('badge-warning', 'fa-triangle-exclamation', 'At risk'),
+  'over': ('badge-critical', 'fa-circle-xmark', 'Over budget'),
+  'upcoming': ('badge-info', 'fa-clock', 'Upcoming'),
+} %}
+{% set b = map.get(status, map['on_track']) %}
+<span class="badge {{ b[0] }}"><i class="fa-solid {{ b[1] }}" aria-hidden="true"></i>{{ b[2] }}</span>
+{%- endmacro %}
+
+{% macro meter(b) -%}
+{% set used = [b.percent, 100]|min %}
+<div class="meter is-{{ b.status }}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ used|round|int }}" aria-label="{{ b.category }}: {{ b.percent|round|int }}% of budget used">
+  <span style="width: {{ used|round(1) }}%"></span>
+  {% if b.expected_to_date is not none and b.budget %}
+    <i class="pace" style="left: calc({{ (b.expected_to_date / b.budget * 100)|round(1) }}% - 1px)" title="Even-pace marker for today"></i>
+  {% endif %}
+</div>
+{%- endmacro %}
+
+{% macro empty_state(icon, title, text) -%}
+<div class="empty">
+  <div class="icon-circle"><i class="fa-solid {{ icon }}" aria-hidden="true"></i></div>
+  <h3>{{ title }}</h3>
+  <p>{{ text }}</p>
+  {% if caller %}<div class="row">{{ caller() }}</div>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro txn_icon(txn) -%}
+<span class="icon-chip {{ txn.type }}" aria-hidden="true"><i class="fa-solid {{ txn.category|cat_icon(txn.type) }}"></i></span>
+{%- endmacro %}
+
+{% macro theme_toggle() -%}
+<button class="btn btn-ghost btn-icon" type="button" data-theme-toggle aria-label="Toggle dark mode" title="Toggle dark mode">
+  <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>
+</button>
+{%- endmacro %}
+
+{% macro delete_button(action, message, label='Delete', icon_only=false, next=None) -%}
+<form class="inline" method="post" action="{{ action }}" data-confirm="{{ message }}" data-confirm-label="{{ label }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+  <button class="btn btn-danger-ghost btn-sm{{ ' btn-icon' if icon_only }}" type="submit" {% if icon_only %}aria-label="{{ label }}" title="{{ label }}"{% endif %}>
+    <i class="fa-solid fa-trash-can" aria-hidden="true"></i>{% if not icon_only %} {{ label }}{% endif %}
+  </button>
+</form>
+{%- endmacro %}

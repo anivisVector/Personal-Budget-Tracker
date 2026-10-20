@@ -1,0 +1,70 @@
+{% extends 'layouts/app.html' %}
+{% import '_macros.html' as m with context %}
+{% block title %}Categories{% endblock %}
+
+{% macro category_list(items, type_) -%}
+  <ul class="list">
+    {% for c in items %}
+      <li class="list-item">
+        <span class="icon-chip {{ type_ }}" aria-hidden="true"><i class="fa-solid {{ c.name|cat_icon(type_) }}"></i></span>
+        <div class="grow">
+          <div class="title">{{ c.name }}</div>
+          <div class="sub">{{ c.usage }} {{ 'transaction' if c.usage == 1 else 'transactions' }}{% if c.has_budget %} · has budgets{% endif %}</div>
+        </div>
+        {% if c.is_custom %}
+          <span class="badge badge-brand">Custom</span>
+          {% if c.has_budget %}
+            <span class="btn btn-ghost btn-sm btn-icon" aria-disabled="true" title="Remove this category's budgets before deleting it"><i class="fa-solid fa-lock" aria-hidden="true"></i><span class="sr-only">Delete unavailable: category has budgets</span></span>
+          {% else %}
+            {{ m.delete_button(url_for('categories.delete', category_id=c.id), 'Delete the "' ~ c.name ~ '" category? Existing transactions keep their label.', icon_only=true) }}
+          {% endif %}
+        {% else %}
+          <span class="badge">Default</span>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{%- endmacro %}
+
+{% block content %}
+<div class="page-header reveal">
+  <div>
+    <h1>Categories</h1>
+    <p>Defaults cover the basics; add your own for anything specific to you.</p>
+  </div>
+</div>
+
+<section class="card card-accent" data-reveal style="margin-bottom: 20px" aria-labelledby="new-cat">
+  <div class="card-header"><h2 id="new-cat"><span class="title-icon tone-indigo" aria-hidden="true"><i class="fa-solid fa-plus"></i></span> New category</h2></div>
+  <form class="card-body" method="post" action="{{ url_for('categories.create') }}" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-grid cols-4" style="align-items: end">
+      <div class="field" style="grid-column: span 2">
+        <label class="label" for="name">Name</label>
+        <input class="input" id="name" name="name" maxlength="40" value="{{ form.get('name', '') }}" placeholder="e.g. Gym, Travel, EMI" required{{ m.invalid(errors, 'name') }}>
+        {{ m.field_error(errors, 'name') }}
+      </div>
+      <fieldset class="field" style="border: 0; padding: 0; margin: 0">
+        <legend class="label" style="margin-bottom: 6px">Type</legend>
+        <div class="segmented">
+          <input type="radio" id="cat-expense" name="type" value="expense" {{ 'checked' if form.get('type', 'expense') != 'income' }}><label for="cat-expense">Expense</label>
+          <input type="radio" id="cat-income" name="type" value="income" {{ 'checked' if form.get('type') == 'income' }}><label for="cat-income">Income</label>
+        </div>
+        {{ m.field_error(errors, 'type') }}
+      </fieldset>
+      <div class="field"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add category</button></div>
+    </div>
+  </form>
+</section>
+
+<div class="grid grid-1-1" data-reveal-group>
+  <section class="card" data-reveal aria-labelledby="exp-title">
+    <div class="card-header"><div><h2 id="exp-title"><span class="title-icon tone-pink" aria-hidden="true"><i class="fa-solid fa-arrow-trend-down"></i></span> Expense categories</h2><p>{{ grouped.expense|length }} categories</p></div></div>
+    <div class="card-body">{{ category_list(grouped.expense, 'expense') }}</div>
+  </section>
+  <section class="card" data-reveal aria-labelledby="inc-title">
+    <div class="card-header"><div><h2 id="inc-title"><span class="title-icon tone-teal" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span> Income categories</h2><p>{{ grouped.income|length }} categories</p></div></div>
+    <div class="card-body">{{ category_list(grouped.income, 'income') }}</div>
+  </section>
+</div>
+{% endblock %}

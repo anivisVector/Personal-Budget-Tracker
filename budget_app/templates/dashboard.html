@@ -1,0 +1,252 @@
+{% extends 'layouts/app.html' %}
+{% import '_macros.html' as m with context %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+{% set month = snap.month %}
+<div class="page-header reveal">
+  <div>
+    <h1>{{ greeting }}, <em>{{ current_user.username }}</em></h1>
+    <p>Here's {{ snap.month_label }} so far, as of {{ as_of.isoformat()|nice_date }}.</p>
+  </div>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('transactions.import_view') }}"><i class="fa-solid fa-file-arrow-up" aria-hidden="true"></i> Import</a>
+    <a class="btn btn-primary" href="{{ url_for('transactions.new', next=url_for('dashboard.index')) }}"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add transaction</a>
+  </div>
+</div>
+
+<section class="overview reveal-2" aria-label="Overview">
+  <div class="balance-card" data-tilt>
+    <div class="top">
+      <span class="label">Total balance</span>
+      <span class="chip" aria-hidden="true"></span>
+    </div>
+    <div class="value" data-countup="{{ snap.balance }}" data-decimals="2">{{ snap.balance|inr }}</div>
+    <div class="month-progress">
+      <div class="mp-labels"><span>Day {{ progress.day }} of {{ progress.days }}</span><span>{{ progress.days - progress.day }} {{ 'day' if progress.days - progress.day == 1 else 'days' }} left in {{ snap.month_label.split()[0] }}</span></div>
+      <div class="mp-track" role="progressbar" aria-label="Month progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ progress.pct }}"><span style="width: {{ progress.pct }}%"></span></div>
+    </div>
+    <div class="meta">
+      <div>{{ snap.month_label.split()[0] }} net<strong>{{ month.net|inr(0, sign=true) }}</strong></div>
+      <div>Savings rate<strong>{{ snap.savings_rate|pct }}</strong></div>
+      <span class="spacer"></span>
+      <span class="brandline" aria-hidden="true">{{ app_name }}</span>
+    </div>
+  </div>
+
+  <div class="kpis" data-reveal-group>
+    <div class="card kpi" data-reveal>
+      <span class="icon-chip tone-teal" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span>
+      <div class="kpi-label">Income this month</div>
+      <div class="kpi-value" data-countup="{{ month.income }}" data-decimals="0">{{ month.income|inr(0) }}</div>
+      <div class="kpi-meta">Last month {{ snap.previous_month.income|inr(0) }}</div>
+    </div>
+    <div class="card kpi" data-reveal>
+      <span class="icon-chip tone-pink" aria-hidden="true"><i class="fa-solid fa-arrow-trend-down"></i></span>
+      <div class="kpi-label">Spent this month</div>
+      <div class="kpi-value" data-countup="{{ month.expense }}" data-decimals="0">{{ month.expense|inr(0) }}</div>
+      <div class="kpi-meta">Last month {{ snap.previous_month.expense|inr(0) }}</div>
+    </div>
+    <div class="card kpi" data-reveal>
+      <span class="icon-chip tone-amber" aria-hidden="true"><i class="fa-solid fa-bullseye"></i></span>
+      <div class="kpi-label">Budgets on track</div>
+      {% if snap.budgets %}
+        <div class="kpi-value">{{ budgets_ok }} <span class="muted" style="font-size: 1rem">/ {{ snap.budgets|length }}</span></div>
+        <div class="kpi-meta">
+          {% if snap.over_budget %}<span class="delta delta-bad"><i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>{{ snap.over_budget|length }} over</span>{% endif %}
+          {% if snap.at_risk %}<span class="delta" style="color: var(--warning-text)"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>{{ snap.at_risk|length }} at risk</span>{% endif %}
+          {% if not snap.over_budget and not snap.at_risk %}All within pace{% endif %}
+        </div>
+      {% else %}
+        <div class="kpi-value">—</div>
+        <div class="kpi-meta"><a href="{{ url_for('budgets.index') }}">Set your first budget</a></div>
+      {% endif %}
+    </div>
+    <div class="card kpi" data-reveal>
+      <span class="icon-chip tone-indigo" aria-hidden="true"><i class="fa-solid fa-receipt"></i></span>
+      <div class="kpi-label">Entries this month</div>
+      <div class="kpi-value" data-countup="{{ month.count }}" data-decimals="0">{{ month.count }}</div>
+      <div class="kpi-meta">{{ snap.all_time.count }} all time</div>
+    </div>
+  </div>
+</section>
+
+<div class="grid grid-3-1">
+  <div class="grid" style="align-content: start" data-reveal-group>
+    <section class="card card-accent" data-reveal aria-labelledby="quick-title">
+      <div class="card-header">
+        <div>
+          <h2 id="quick-title"><span class="title-icon tone-pink" aria-hidden="true"><i class="fa-solid fa-wand-magic-sparkles"></i></span> Quick add</h2>
+          <p>Describe it in your own words. You'll confirm before it's saved.</p>
+        </div>
+        <span class="badge {{ 'badge-aurora' if ai_enabled else '' }}">{{ 'Gemini' if ai_enabled else 'Smart rules' }}</span>
+      </div>
+      <div class="card-body">
+        <form id="nl-form" data-endpoint="{{ url_for('api.parse_api') }}" data-save="{{ url_for('api.create_transaction_api') }}" autocomplete="off">
+          <label class="sr-only" for="nl-input">Describe a transaction</label>
+          <div class="magic-input">
+            <span class="sparkle" aria-hidden="true"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+            <input class="input" id="nl-input" maxlength="300" placeholder="e.g. spent 450 on groceries yesterday" required>
+            <button class="btn btn-primary" type="submit" id="nl-submit">Preview</button>
+          </div>
+          <p class="status-line" id="nl-status" role="status" aria-live="polite"></p>
+        </form>
+        <div class="preview hidden" id="nl-preview">
+          <dl>
+            <div><dt>Amount</dt><dd id="pv-amount"></dd></div>
+            <div><dt>Type</dt><dd id="pv-type"></dd></div>
+            <div><dt>Category</dt><dd id="pv-category"></dd></div>
+            <div><dt>Date</dt><dd id="pv-date"></dd></div>
+          </dl>
+          <div class="row">
+            <button class="btn btn-primary" type="button" id="nl-save"><i class="fa-solid fa-check" aria-hidden="true"></i> Save</button>
+            <a class="btn" id="nl-edit" href="{{ url_for('transactions.new') }}"><i class="fa-solid fa-pen" aria-hidden="true"></i> Edit details</a>
+            <button class="btn btn-ghost" type="button" id="nl-cancel">Discard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-reveal aria-labelledby="pace-title">
+      <div class="card-header">
+        <div>
+          <h2 id="pace-title"><span class="title-icon tone-amber" aria-hidden="true"><i class="fa-solid fa-gauge-high"></i></span> Budget pace</h2>
+          <p>The tick shows where an even pace would put you today.</p>
+        </div>
+        <a class="btn btn-ghost btn-sm" href="{{ url_for('budgets.index') }}">Manage</a>
+      </div>
+      <div class="card-body">
+        {% if snap.budgets %}
+          {% for b in snap.budgets|sort(attribute='percent', reverse=true) %}
+            {% if loop.index <= 5 %}
+            <div class="budget-item">
+              <div class="top">
+                <span class="icon-chip" style="width: 30px; height: 30px; border-radius: 9px" aria-hidden="true"><i class="fa-solid {{ b.category|cat_icon }}"></i></span>
+                <strong>{{ b.category }}</strong>
+                <span class="spacer"></span>
+                {{ m.status_badge(b.status) }}
+              </div>
+              {{ m.meter(b) }}
+              <div class="figures">
+                <span class="num">{{ b.spent|inr(0) }} of {{ b.budget|inr(0) }}</span>
+                {% if b.status == 'over' %}<span>{{ (b.spent - b.budget)|inr(0) }} over</span>
+                {% elif b.status == 'at_risk' %}<span>Heading for ~{{ b.projected|inr(0) }}</span>
+                {% else %}<span>{{ b.remaining|inr(0) }} left</span>{% endif %}
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          {% call m.empty_state('fa-bullseye', 'No budgets this month', 'Give your biggest categories a monthly limit and we\'ll warn you before you overspend.') %}
+            <a class="btn btn-primary btn-sm" href="{{ url_for('budgets.index') }}">Set a budget</a>
+          {% endcall %}
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="card" data-reveal aria-labelledby="recent-title">
+      <div class="card-header">
+        <div>
+          <h2 id="recent-title"><span class="title-icon tone-indigo" aria-hidden="true"><i class="fa-solid fa-clock-rotate-left"></i></span> Recent activity</h2>
+        </div>
+        <a class="btn btn-ghost btn-sm" href="{{ url_for('transactions.index') }}">View all</a>
+      </div>
+      <div class="card-body">
+        {% if snap.recent %}
+          <ul class="list">
+            {% for t in snap.recent %}
+              <li class="list-item">
+                {{ m.txn_icon(t) }}
+                <div class="grow">
+                  <div class="title">{{ t.title or t.category }}</div>
+                  <div class="sub">{{ t.category }} · {{ t.date|nice_date }}</div>
+                </div>
+                {{ m.money(t.amount, t.type) }}
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          {% call m.empty_state('fa-receipt', 'No transactions yet', 'Use quick add above, ask the assistant, or import a CSV to get started.') %}
+            <a class="btn btn-primary btn-sm" href="{{ url_for('transactions.new') }}">Add a transaction</a>
+            <a class="btn btn-sm" href="{{ url_for('transactions.import_view') }}">Import CSV</a>
+          {% endcall %}
+        {% endif %}
+      </div>
+    </section>
+  </div>
+
+  <div class="grid" style="align-content: start" data-reveal-group>
+    <section class="card" data-reveal aria-labelledby="health-title">
+      <div class="card-header">
+        <div>
+          <h2 id="health-title"><span class="title-icon tone-teal" aria-hidden="true"><i class="fa-solid fa-heart-pulse"></i></span> Financial health</h2>
+          <p>How this score is built, point by point.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        {% if snap.health %}
+          <div class="score">
+            <div class="score-ring" style="--value: {{ snap.health.score }}" data-score="{{ snap.health.score }}" role="img" aria-label="Health score {{ snap.health.score }} out of 100"><span>{{ snap.health.score }}</span></div>
+            <div>
+              <strong style="text-transform: capitalize">{{ snap.health.band }}</strong>
+              <p class="muted" style="font-size: 0.85rem">Out of 100, updated with every entry.</p>
+            </div>
+          </div>
+          <div style="margin-top: 14px">
+            {% for f in snap.health.factors %}
+              <div class="factor"><strong>{{ f.label }}</strong><b class="num">{{ f.points }}/{{ f.max }}</b><span>{{ f.detail }}</span></div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted">Add a few transactions to see your score.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="card ai-card" data-reveal aria-labelledby="insights-title" id="insights" data-endpoint="{{ url_for('api.insights_api') }}">
+      <div class="card-header">
+        <div>
+          <h2 id="insights-title"><span class="title-icon tone-indigo" aria-hidden="true"><i class="fa-solid fa-lightbulb"></i></span> Insights</h2>
+          <p>{{ snap.month_label }}</p>
+        </div>
+      </div>
+      <div class="card-body" id="insights-body" aria-live="polite" aria-busy="true">
+        <div class="stack" aria-hidden="true">
+          <div class="skeleton" style="width: 90%"></div>
+          <div class="skeleton" style="width: 75%"></div>
+          <div class="skeleton" style="width: 82%"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-reveal aria-labelledby="where-title">
+      <div class="card-header">
+        <div>
+          <h2 id="where-title"><span class="title-icon tone-pink" aria-hidden="true"><i class="fa-solid fa-chart-simple"></i></span> Where it went</h2>
+          <p>Spending by category this month.</p>
+        </div>
+      </div>
+      <div class="card-body">
+        {% if spending %}
+          {% set top = spending[0].total or 1 %}
+          <div class="hbars">
+            {% for c in spending %}
+              <div class="hbar{{ ' is-other' if c.is_other }}">
+                <span class="name">{{ c.category }}</span>
+                <span class="value">{{ c.total|inr(0) }}<small>{{ (c.share * 100)|round|int }}%</small></span>
+                <div class="track" aria-hidden="true"><span style="width: {{ (c.total / top * 100)|round(1) }}%; animation-delay: {{ loop.index0 * 0.06 }}s"></span></div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted">No spending recorded this month yet.</p>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="{{ url_for('static', filename='js/dashboard.js', v=asset_version) }}" defer></script>
+{% endblock %}

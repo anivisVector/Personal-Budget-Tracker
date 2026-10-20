@@ -1,0 +1,118 @@
+{% extends 'layouts/app.html' %}
+{% import '_macros.html' as m with context %}
+{% block title %}Budgets · {{ label }}{% endblock %}
+
+{% block content %}
+{% set editing = budgets|selectattr('id', 'equalto', edit_id)|first if edit_id else none %}
+{% set prefill_cat = request.args.get('category_id', type=int) %}
+<div class="page-header reveal">
+  <div>
+    <h1>Budgets</h1>
+    <p>Monthly limits per expense category, with pace projections for the current month.</p>
+  </div>
+  <div class="actions">
+    <nav class="segmented" aria-label="Choose month">
+      <a href="{{ url_for('budgets.index', year=prev.year, month=prev.month) }}" aria-label="Previous month"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></a>
+      <a aria-current="true" href="{{ url_for('budgets.index', year=year, month=month) }}">{{ label }}</a>
+      <a href="{{ url_for('budgets.index', year=next.year, month=next.month) }}" aria-label="Next month"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></a>
+    </nav>
+    <form method="post" action="{{ url_for('budgets.copy_previous') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="year" value="{{ year }}"><input type="hidden" name="month" value="{{ month }}">
+      <button class="btn" type="submit" title="Adds last month's budgets for categories that don't have one yet; never overwrites"><i class="fa-solid fa-copy" aria-hidden="true"></i> Copy last month</button>
+    </form>
+  </div>
+</div>
+
+{% if budgets %}
+<div class="kpis kpis-4 reveal-2" style="margin-bottom: 20px">
+  <div class="card kpi" data-reveal><span class="icon-chip tone-indigo" aria-hidden="true"><i class="fa-solid fa-bullseye"></i></span><div class="kpi-label">Budgeted</div><div class="kpi-value">{{ totals.budget|inr(0) }}</div></div>
+  <div class="card kpi" data-reveal><span class="icon-chip tone-pink" aria-hidden="true"><i class="fa-solid fa-cart-shopping"></i></span><div class="kpi-label">Spent</div><div class="kpi-value">{{ totals.spent|inr(0) }}</div><div class="kpi-meta">{{ ((totals.spent / totals.budget * 100) if totals.budget else 0)|round|int }}% of budgets</div></div>
+  <div class="card kpi" data-reveal><span class="icon-chip tone-teal" aria-hidden="true"><i class="fa-solid fa-piggy-bank"></i></span><div class="kpi-label">Remaining</div><div class="kpi-value">{{ (totals.budget - totals.spent)|inr(0) }}</div></div>
+  <div class="card kpi" data-reveal><span class="icon-chip tone-amber" aria-hidden="true"><i class="fa-solid fa-triangle-exclamation"></i></span><div class="kpi-label">Needs attention</div><div class="kpi-value">{{ budgets|selectattr('status', 'in', ['over', 'at_risk'])|list|length }}</div><div class="kpi-meta">over or at risk</div></div>
+</div>
+{% endif %}
+
+<div class="grid grid-3-1">
+  <section class="card" data-reveal aria-labelledby="list-title">
+    <div class="card-header">
+      <div>
+        <h2 id="list-title"><span class="title-icon tone-amber" aria-hidden="true"><i class="fa-solid fa-gauge-high"></i></span> {{ label }}</h2>
+        <p>{% if is_current %}The tick on each bar marks an even pace for today.{% else %}Spending is totalled for the whole month.{% endif %}</p>
+      </div>
+    </div>
+    <div class="card-body">
+      {% if budgets %}
+        {% for b in budgets %}
+          <div class="budget-item">
+            <div class="top">
+              <span class="icon-chip" style="width: 30px; height: 30px; border-radius: 9px" aria-hidden="true"><i class="fa-solid {{ b.category|cat_icon }}"></i></span>
+              <strong>{{ b.category }}</strong>
+              {{ m.status_badge(b.status) }}
+              <span class="spacer"></span>
+              <a class="btn btn-ghost btn-sm" href="{{ url_for('budgets.index', year=year, month=month, edit=b.id) }}#budget-form"><i class="fa-solid fa-pen" aria-hidden="true"></i><span class="sr-only">Edit {{ b.category }} budget</span></a>
+              {{ m.delete_button(url_for('budgets.delete', budget_id=b.id), 'Remove the ' ~ b.category ~ ' budget for ' ~ label ~ '?', 'Remove', icon_only=true) }}
+            </div>
+            {{ m.meter(b) }}
+            <div class="figures">
+              <span class="num">{{ b.spent|inr }} of {{ b.budget|inr }} · {{ b.percent|round|int }}%</span>
+              {% if b.status == 'over' %}<span>{{ (b.spent - b.budget)|inr }} over budget</span>
+              {% elif b.status == 'at_risk' %}<span>Projected {{ b.projected|inr(0) }} by month end</span>
+              {% elif b.status == 'upcoming' %}<span>Starts {{ label }}</span>
+              {% else %}<span>{{ b.remaining|inr }} left{% if is_current %} · projected {{ b.projected|inr(0) }}{% endif %}</span>{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        {% call m.empty_state('fa-bullseye', 'No budgets for ' ~ label, 'Set a limit for the categories you want to keep an eye on, or copy last month\'s budgets.') %}{% endcall %}
+      {% endif %}
+    </div>
+  </section>
+
+  <div class="grid" style="align-content: start" data-reveal-group>
+    <section class="card card-accent" data-reveal id="budget-form" aria-labelledby="form-title">
+      <div class="card-header"><h2 id="form-title"><span class="title-icon tone-indigo" aria-hidden="true"><i class="fa-solid fa-sliders"></i></span> {{ 'Edit budget' if editing else 'Set a budget' }}</h2></div>
+      <form class="card-body stack" method="post" action="{{ url_for('budgets.save') }}" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="year" value="{{ year }}"><input type="hidden" name="month" value="{{ month }}">
+        <div class="field">
+          <label class="label" for="category_id">Category</label>
+          {% set selected = (form.get('category_id')|int if form.get('category_id') else (editing.category_id if editing else prefill_cat)) %}
+          <select class="select" id="category_id" name="category_id" required{{ m.invalid(errors, 'category_id') }}>
+            <option value="">Choose…</option>
+            {% for c in categories %}<option value="{{ c.id }}" {{ 'selected' if selected == c.id }}>{{ c.name }}</option>{% endfor %}
+          </select>
+          {{ m.field_error(errors, 'category_id') }}
+        </div>
+        <div class="field">
+          <label class="label" for="amount">Monthly limit</label>
+          <div class="input-prefix"><span>₹</span><input class="input" id="amount" name="amount" inputmode="decimal" value="{{ form.get('amount') or (editing.budget if editing else request.args.get('amount', '')) }}" placeholder="5000" required{{ m.invalid(errors, 'amount') }}></div>
+          {{ m.field_error(errors, 'amount') }}
+          <p class="hint">Applies to {{ label }}. Saving an existing category updates it.</p>
+        </div>
+        <div class="row">
+          <button class="btn btn-primary" type="submit"><i class="fa-solid fa-check" aria-hidden="true"></i> {{ 'Update' if editing else 'Save budget' }}</button>
+          {% if editing %}<a class="btn btn-ghost" href="{{ url_for('budgets.index', year=year, month=month) }}">Cancel</a>{% endif %}
+        </div>
+      </form>
+    </section>
+
+    {% if unbudgeted %}
+    <section class="card" data-reveal aria-labelledby="unb-title">
+      <div class="card-header"><div><h2 id="unb-title"><span class="title-icon tone-pink" aria-hidden="true"><i class="fa-solid fa-eye"></i></span> Spending without a budget</h2><p>Categories with spending this month and no limit.</p></div></div>
+      <div class="card-body">
+        <ul class="list">
+          {% for s in unbudgeted[:6] %}
+            {% set cat = categories|selectattr('name', 'equalto', s.category)|first %}
+            <li class="list-item">
+              <div class="grow"><div class="title">{{ s.category }}</div><div class="sub">{{ s.total|inr(0) }} spent</div></div>
+              {% if cat %}<a class="btn btn-sm" href="{{ url_for('budgets.index', year=year, month=month, category_id=cat.id, amount=((s.total * 1.1 / 500)|round(0, 'ceil') * 500)|int) }}#budget-form">Set budget</a>{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
